@@ -26,7 +26,7 @@ const MovieListingsPage = () => {
 
   return (
     <Container maxWidth="md">
-      <ShowingDates />
+      <ShowingDates /> {/* TODO: passing data? */}
       <MovieListings films={films} />
     </Container>
   );

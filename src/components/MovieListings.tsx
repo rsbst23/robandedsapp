@@ -21,7 +21,7 @@ const MovieListings = ({ films }: MovieListingProps) => {
       columns={{ xs: 4, sm: 8, md: 12 }}
     >
       {films.map((film) => (
-        <Grid key={films.id} size={{ xs: 2, sm: 4, md: 4 }}>
+        <Grid key={film.id} size={{ xs: 2, sm: 4, md: 4 }}>
           <MovieShowingCard film={film} showTimes={showTimes} />
         </Grid>
       ))}

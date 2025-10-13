@@ -9,8 +9,10 @@ import MovieListingsPage from "./pages/MovieListingsPage";
 function App() {
   return (
     <>
-      <header>Header</header>
-      <nav>navigation</nav>
+      <header>
+        Header<nav>navigation</nav>
+      </header>
+
       <MovieListingsPage />
       <MovieDetailsPage filmId={1} />
       {/* <PickSeats />
