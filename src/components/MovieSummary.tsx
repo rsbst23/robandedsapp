@@ -1,8 +1,17 @@
-import { Typography } from "@mui/material"
+import { Typography } from "@mui/material";
 
-const MovieSummary = ({ imageUrl, title, description, runTime }: { imageUrl: string; title: string; description: string; runTime: string }) => {
+const MovieSummary = ({
+  imageUrl,
+  title,
+  description,
+  runTime,
+}: {
+  imageUrl: string;
+  title: string;
+  description: string;
+  runTime: string;
+}) => {
   return (
-
     <div className="movie-card">
       <img src={imageUrl} alt={title} className="movie-image" />
       <div className="movie-details">
@@ -14,4 +23,4 @@ const MovieSummary = ({ imageUrl, title, description, runTime }: { imageUrl: str
   );
 };
 
-export default MovieSummary
+export default MovieSummary;
