@@ -21,7 +21,6 @@ const MovieDetails = ({
   votes,
   releaseDate,
   filmUrl,
-  showTimes,
 }: MovieDetailsProps) => {
   return (
     <div>

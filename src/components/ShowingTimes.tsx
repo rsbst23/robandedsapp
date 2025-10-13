@@ -4,7 +4,7 @@ interface ShowingTimesProps {
   showTimes: Date[];
 }
 
-function ShowingTimes({ fileId, selectedDate, showTimes }: ShowingTimesProps) {
+function ShowingTimes({ showTimes }: ShowingTimesProps) {
   return (
     <>
       <div className="showtimes-container">
