@@ -1,7 +1,7 @@
 import { Container, Typography, Paper, Box } from "@mui/material";
 import { List, ListItem, ListItemText, Grid } from "@mui/material";
 import { useEffect, useState } from "react";
-import MovieListing from "./MovieListing";
+import MovieShowingCard from "./MovieShowingCard";
 import type { Film } from "../types/types";
 
 function LandingPage() {
@@ -74,13 +74,7 @@ function LandingPage() {
       >
         {movies.map((movie) => (
           <Grid key={movie.id} size={{ xs: 2, sm: 4, md: 4 }}>
-            <MovieListing
-              imageUrl={movie.poster_path}
-              title={movie.title}
-              description={movie.overview}
-              runTime={movie.runtime.toString()}
-              showTimes={showTimes}
-            />
+            <MovieShowingCard film={movie} showTimes={showTimes} />
           </Grid>
         ))}
       </Grid>
