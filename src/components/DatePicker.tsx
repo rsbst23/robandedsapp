@@ -29,14 +29,7 @@ const DatePicker = ({ selectedDate, onDateSelect }: DatePickerProps) => {
     }
   };
 
-  const getSelectedDate = () => {
-    if (currentSelectedDate) {
-      return new Date(currentSelectedDate);
-    }
-    return datesList[0];
-  };
-
-  const getSelectedDateString = (selectedDate?:Date | null) => {
+  const getSelectedDateString = (selectedDate?: Date | null) => {
     return selectedDate?.toLocaleDateString("en-US", {
       weekday: "long",
       month: "long",

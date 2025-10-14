@@ -8,25 +8,26 @@ interface ShowingTimesProps {
 
 function ShowingTimes({ filmId, selectedDate }: ShowingTimesProps) {
   const [showTimes, setShowTimes] = useState<Showing[]>([]);
-  
+
   useEffect(() => {
-      // Only fetch if films array is empty to avoid refetching on every render
-        const fetchShowingTimes = async (): Promise<void> => {
-          try {
-            const response = await fetch(`http://localhost:3008/Showings/${filmId}/${selectedDate.toISOString()}`);
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data: Showing[] = await response.json();
-            setShowTimes(data);
-            
-          } catch (error) {
-            console.error("Error fetching movies:", error);
-          }
-        };
-  
-        fetchShowingTimes();
-    }, [filmId, selectedDate]);
+    // Only fetch if films array is empty to avoid refetching on every render
+    const fetchShowingTimes = async (): Promise<void> => {
+      try {
+        const response = await fetch(
+          `http://localhost:3008/Showings/${filmId}/${selectedDate.toISOString()}`
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data: Showing[] = await response.json();
+        setShowTimes(data);
+      } catch (error) {
+        console.error("Error fetching movies:", error);
+      }
+    };
+
+    fetchShowingTimes();
+  }, [filmId, selectedDate]);
 
   return (
     <>

@@ -8,7 +8,6 @@ interface MovieListingProps {
 }
 
 const MovieListings = ({ films, selectedDate }: MovieListingProps) => {
-  
   return (
     <Grid
       container

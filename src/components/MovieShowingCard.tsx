@@ -12,10 +12,7 @@ const MovieShowingCard = ({ film, selectedDate }: MovieListingProps) => {
   return (
     <Paper className="movie-listing-card" elevation={3} sx={{ p: 2 }}>
       <MovieSummary film={film} />
-      <ShowingTimes
-        filmId={film.id}
-        selectedDate={selectedDate}
-      />
+      <ShowingTimes filmId={film.id} selectedDate={selectedDate} />
     </Paper>
   );
 };
