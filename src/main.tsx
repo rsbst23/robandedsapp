@@ -1,18 +1,25 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { ThemeProvider, createTheme } from '@mui/material/styles'
-import CssBaseline from '@mui/material/CssBaseline'
-import './index.css'
-import App from './App.tsx'
+import { StrictMode } from "react";
+import ReactDOM from "react-dom/client";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { routeTree } from "./routeTree.gen";
 
+const router = createRouter({ routeTree });
 // Create a default MUI theme
-const theme = createTheme()
+const theme = createTheme();
 
-createRoot(document.getElementById('root')!).render(
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof router;
+  }
+}
+// Render the app
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <App />
+      <RouterProvider router={router} />
     </ThemeProvider>
-  </StrictMode>,
-)
+  </StrictMode>
+);
