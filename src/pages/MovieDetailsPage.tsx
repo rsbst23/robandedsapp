@@ -24,7 +24,7 @@ const MovieDetailsPage = ({ filmId }: MovieDetailsPageProps) => {
     };
 
     fetchMovies();
-  }, []);
+  }, [filmId]);
 
   return film ? <MovieDetails film={film} /> : null;
 };
