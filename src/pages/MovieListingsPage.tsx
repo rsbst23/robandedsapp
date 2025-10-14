@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import type { Film } from "../types/types";
 import { Container } from "@mui/material";
-import ShowingDates from "../components/ShowingDates";
+import DatePicker from "../components/DatePicker";
 import MovieListings from "../components/MovieListings";
 
 const MovieListingsPage = () => {
   const [films, setFilms] = useState<Film[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(
+    new Date("2025-10-12")
+  );
 
   useEffect(() => {
     const fetchMovies = async (): Promise<void> => {
@@ -26,8 +29,9 @@ const MovieListingsPage = () => {
 
   return (
     <Container maxWidth="md">
-      <ShowingDates /> {/* TODO: passing data? */}
+      <DatePicker selectedDate={selectedDate} onDateSelect={setSelectedDate} />
       <MovieListings films={films} />
+      <p>Selected Date: {selectedDate?.toString()} </p>
     </Container>
   );
 };

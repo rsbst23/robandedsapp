@@ -1,0 +1,43 @@
+.date-picker-container {
+  margin: 32px 0;
+}
+
+.date-picker-paper {
+  padding: 24px;
+}
+
+.date-picker-title {
+  margin-bottom: 16px;
+}
+
+.days-container {
+  display: flex;
+  background-color: lightgray;
+  margin-bottom: 16px;
+}
+
+.days-list {
+  display: flex;
+  flex-direction: row;
+  padding: 0;
+}
+
+.day-item {
+  width: auto;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.day-item:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.day-item.selected {
+  background-color: #1976d2;
+  color: white;
+}
+
+.day-item.selected:hover {
+  background-color: #1565c0;
+}
