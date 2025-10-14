@@ -1,5 +1,5 @@
 interface ShowingTimesProps {
-  fileId: number;
+  filmId: number;
   selectedDate: Date;
   showTimes: Date[];
 }

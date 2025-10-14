@@ -13,7 +13,7 @@ const MovieShowingCard = ({ film, showTimes }: MovieListingProps) => {
     <Paper className="movie-listing-card" elevation={3} sx={{ p: 2 }}>
       <MovieSummary film={film} />
       <ShowingTimes
-        fileId={film.id}
+        filmId={film.id}
         selectedDate={new Date()}
         showTimes={showTimes}
       />
