@@ -5,17 +5,16 @@ import type { Film } from "../types/types";
 
 interface MovieListingProps {
   film: Film;
-  showTimes: Date[];
+  selectedDate?: Date;
 }
 
-const MovieShowingCard = ({ film, showTimes }: MovieListingProps) => {
+const MovieShowingCard = ({ film, selectedDate }: MovieListingProps) => {
   return (
     <Paper className="movie-listing-card" elevation={3} sx={{ p: 2 }}>
       <MovieSummary film={film} />
       <ShowingTimes
         filmId={film.id}
-        selectedDate={new Date()}
-        showTimes={showTimes}
+        selectedDate={selectedDate}
       />
     </Paper>
   );

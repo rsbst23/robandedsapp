@@ -4,16 +4,11 @@ import MovieShowingCard from "./MovieShowingCard";
 
 interface MovieListingProps {
   films: Film[];
+  selectedDate?: Date; // Optional prop for selected date
 }
 
-const MovieListings = ({ films }: MovieListingProps) => {
-  //TODO: fetch this (here or from parent)
-  const showTimes = [
-    new Date(2025, 10, 13, 18, 30),
-    new Date(2025, 10, 13, 20, 30),
-    new Date(2025, 10, 13, 22, 30),
-  ];
-
+const MovieListings = ({ films, selectedDate }: MovieListingProps) => {
+  
   return (
     <Grid
       container
@@ -22,7 +17,7 @@ const MovieListings = ({ films }: MovieListingProps) => {
     >
       {films.map((film) => (
         <Grid key={film.id} size={{ xs: 2, sm: 4, md: 4 }}>
-          <MovieShowingCard film={film} showTimes={showTimes} />
+          <MovieShowingCard film={film} selectedDate={selectedDate} />
         </Grid>
       ))}
     </Grid>

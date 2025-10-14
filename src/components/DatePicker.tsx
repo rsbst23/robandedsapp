@@ -36,9 +36,8 @@ const DatePicker = ({ selectedDate, onDateSelect }: DatePickerProps) => {
     return datesList[0];
   };
 
-  const getSelectedDateString = () => {
-    const selectedDate = getSelectedDate();
-    return selectedDate.toLocaleDateString("en-US", {
+  const getSelectedDateString = (selectedDate?:Date | null) => {
+    return selectedDate?.toLocaleDateString("en-US", {
       weekday: "long",
       month: "long",
       day: "numeric",
@@ -54,7 +53,7 @@ const DatePicker = ({ selectedDate, onDateSelect }: DatePickerProps) => {
           className="date-picker-title"
           gutterBottom
         >
-          Showings for {getSelectedDateString()}
+          Showings for {getSelectedDateString(selectedDate)}
         </Typography>
         <Container className="days-container">
           <List className="days-list">
