@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Showing } from "../types/types";
 import { useGlobalStore } from "../stores/filmStore";
+import { Link } from "@tanstack/react-router";
 
 interface ShowingTimesProps {
   filmId: number;
@@ -36,12 +37,19 @@ function ShowingTimes({ filmId }: ShowingTimesProps) {
         <h3>Showing times for Sunday, October 5</h3>
         <div className="showtimes-grid">
           {showTimes.map((showing) => (
-            <button key={showing.id} className="showtime-btn">
-              {new Date(showing.showing_time).toLocaleTimeString("en-US", {
-                hour: "numeric",
-                minute: "2-digit",
-              })}
-            </button>
+            <Link
+              to="/pick-seats/$showingId"
+              params={{ showingId: showing.id.toString() }}
+              key={showing.id}
+              style={{ textDecoration: "none" }}
+            >
+              <button key={showing.id} className="showtime-btn">
+                {new Date(showing.showing_time).toLocaleTimeString("en-US", {
+                  hour: "numeric",
+                  minute: "2-digit",
+                })}
+              </button>
+            </Link>
           ))}
         </div>
       </div>
