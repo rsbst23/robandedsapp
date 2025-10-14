@@ -1,14 +1,10 @@
 import { Container, Typography, Paper, Box } from "@mui/material";
 import { List, ListItem, ListItemText } from "@mui/material";
-import { useState } from "react";
 import "./DatePicker.css";
+import { useGlobalStore } from "../stores/filmStore";
 
-interface DatePickerProps {
-  selectedDate: Date | null;
-  onDateSelect?: (date: Date) => void;
-}
-
-const DatePicker = ({ selectedDate, onDateSelect }: DatePickerProps) => {
+const DatePicker = () => {
+  const { selectedDate, setSelectedDate } = useGlobalStore();
   const startDate = new Date(2025, 9, 12); // October 12, 2025 (month is 0-indexed)
 
   // Generate 7 consecutive dates starting from 10/12/2025
@@ -18,15 +14,8 @@ const DatePicker = ({ selectedDate, onDateSelect }: DatePickerProps) => {
     return date;
   });
 
-  const [currentSelectedDate, setCurrentSelectedDate] = useState<Date | null>(
-    selectedDate || datesList[0]
-  );
-
   const handleDayClick = (date: Date) => {
-    setCurrentSelectedDate(date);
-    if (onDateSelect) {
-      onDateSelect(date);
-    }
+    setSelectedDate(date);
   };
 
   const getSelectedDateString = (selectedDate?: Date | null) => {
@@ -52,7 +41,7 @@ const DatePicker = ({ selectedDate, onDateSelect }: DatePickerProps) => {
           <List className="days-list">
             {datesList.map((date) => {
               const dateString = date.toISOString().split("T")[0];
-              const currentSelectedDateString = currentSelectedDate
+              const selectedDateString = selectedDate
                 ?.toISOString()
                 .split("T")[0];
               const dayName = date.toLocaleDateString("en-US", {
@@ -64,7 +53,7 @@ const DatePicker = ({ selectedDate, onDateSelect }: DatePickerProps) => {
                 <ListItem
                   key={dateString}
                   className={`day-item ${
-                    currentSelectedDateString === dateString ? "selected" : ""
+                    selectedDateString === dateString ? "selected" : ""
                   }`}
                   onClick={() => handleDayClick(date)}
                 >

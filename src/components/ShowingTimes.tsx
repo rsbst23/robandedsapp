@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import type { Showing } from "../types/types";
+import { useGlobalStore } from "../stores/filmStore";
 
 interface ShowingTimesProps {
   filmId: number;
-  selectedDate?: Date;
 }
 
-function ShowingTimes({ filmId, selectedDate }: ShowingTimesProps) {
+function ShowingTimes({ filmId }: ShowingTimesProps) {
+  const { selectedDate } = useGlobalStore();
   const [showTimes, setShowTimes] = useState<Showing[]>([]);
 
   useEffect(() => {
