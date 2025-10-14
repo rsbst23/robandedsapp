@@ -12,7 +12,7 @@ function App() {
       <MovieDetailsPage filmId={1} />
       {/* <PickSeats />
       <Checkout /> */}
-      <footer>Copyright 2024 Troiana Inc</footer>
+      <footer>Copyright 2024 Troiana Sucks Inc</footer>
     </>
   );
 }
