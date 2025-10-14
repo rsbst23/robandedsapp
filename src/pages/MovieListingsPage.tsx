@@ -3,11 +3,10 @@ import type { Film } from "../types/types";
 import { Container } from "@mui/material";
 import DatePicker from "../components/DatePicker";
 import MovieListings from "../components/MovieListings";
-import { useFilmStore, useGlobalStore } from "../stores/filmStore";
+import { useFilmStore } from "../stores/filmStore";
 
 const MovieListingsPage = () => {
   const { films, setFilms } = useFilmStore();
-  const { selectedDate } = useGlobalStore();
 
   useEffect(() => {
     // Only fetch if films array is empty to avoid refetching on every render
@@ -30,8 +29,7 @@ const MovieListingsPage = () => {
   return (
     <Container maxWidth="md">
       <DatePicker />
-      <MovieListings films={films} selectedDate={selectedDate} />
-      <p>Selected Date: {selectedDate?.toString()} </p>
+      <MovieListings films={films} />
     </Container>
   );
 };
