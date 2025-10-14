@@ -60,6 +60,9 @@ const DatePicker = ({ selectedDate, onDateSelect }: DatePickerProps) => {
           <List className="days-list">
             {datesList.map((date) => {
               const dateString = date.toISOString().split("T")[0];
+              const currentSelectedDateString = currentSelectedDate
+                ?.toISOString()
+                .split("T")[0];
               const dayName = date.toLocaleDateString("en-US", {
                 weekday: "short",
               });
@@ -69,7 +72,7 @@ const DatePicker = ({ selectedDate, onDateSelect }: DatePickerProps) => {
                 <ListItem
                   key={dateString}
                   className={`day-item ${
-                    currentSelectedDate === date ? "selected" : ""
+                    currentSelectedDateString === dateString ? "selected" : ""
                   }`}
                   onClick={() => handleDayClick(date)}
                 >
