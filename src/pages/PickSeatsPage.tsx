@@ -2,7 +2,7 @@ import { Button, Box, Typography, Paper } from "@mui/material";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Reservation, type Showing, type Theater } from "../types/types";
+import { type Reservation, type Showing, type Theater } from "../types/types";
 
 interface PickSeatsPageProps {
   showingId: number;
@@ -41,7 +41,6 @@ const PickSeatsPage = ({ showingId }: PickSeatsPageProps) => {
     enabled: !!showingData?.theater_id,
   });
 
-  //http://localhost:3008/showings/1/reservations
   const { data: reservationsData } = useQuery<Reservation[]>({
     queryKey: ["reservations", showingId],
     queryFn: () =>
@@ -50,6 +49,8 @@ const PickSeatsPage = ({ showingId }: PickSeatsPageProps) => {
       ),
     enabled: !!showingData?.theater_id,
   });
+
+  //TOD: check for loading and errors
 
   console.log(showingData, theaterData, reservationsData);
   // Mock theater data - replace with actual API data

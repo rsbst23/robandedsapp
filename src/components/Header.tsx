@@ -1,4 +1,5 @@
 import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+import { Link } from "@tanstack/react-router";
 
 const Header = () => {
   return (
@@ -29,6 +30,8 @@ const Header = () => {
           </Button>
           <Button
             color="inherit"
+            component={Link}
+            to="/register"
             sx={{
               textTransform: "none",
               "&:hover": {
