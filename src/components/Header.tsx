@@ -1,7 +1,10 @@
 import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
 import { Link } from "@tanstack/react-router";
+import { useAuth } from "../hooks/useAuth";
 
 const Header = () => {
+  const { logout, isAuthenticated, user } = useAuth();
+
   return (
     <AppBar position="static" sx={{ backgroundColor: "#1976d2" }}>
       <Toolbar>
@@ -17,17 +20,41 @@ const Header = () => {
           Dinner and a Movie
         </Typography>
         <Box sx={{ display: "flex", gap: 2 }}>
-          <Button
-            color="inherit"
-            sx={{
-              textTransform: "none",
-              "&:hover": {
-                backgroundColor: "rgba(255, 255, 255, 0.1)",
-              },
-            }}
-          >
-            Login
-          </Button>
+          {!isAuthenticated ? (
+            <Button
+              color="inherit"
+              component={Link}
+              to="/login"
+              sx={{
+                textTransform: "none",
+                "&:hover": {
+                  backgroundColor: "rgba(255, 255, 255, 0.1)",
+                },
+              }}
+            >
+              Login
+            </Button>
+          ) : (
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Typography variant="body1" sx={{ color: "white" }}>
+                Welcome, {user?.username}!
+              </Typography>
+              <Button
+                color="inherit"
+                onClick={logout}
+                to="/login"
+                component={Link}
+                sx={{
+                  textTransform: "none",
+                  "&:hover": {
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                  },
+                }}
+              >
+                Logout
+              </Button>
+            </Box>
+          )}
           <Button
             color="inherit"
             component={Link}

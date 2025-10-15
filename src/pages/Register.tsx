@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "../hooks/useAuth";
+import { useNavigate } from "@tanstack/react-router";
 
 import {
   Box,
@@ -14,50 +16,8 @@ import type { User } from "../types/types";
 
 const Register = () => {
   const queryClient = useQueryClient();
-
-  const saveUser = async (
-    userData: Omit<User, "id" | "adminUser" | "isServer" | "imageUrl">
-  ) => {
-    const response = await fetch("http://localhost:3008/users", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(userData),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to save user");
-    }
-
-    return response.json();
-  };
-
-  const { mutate, isPending, error, reset } = useMutation({
-    mutationFn: saveUser,
-    onSuccess: () => {
-      // refresh the users data after adding
-      queryClient.invalidateQueries({ queryKey: ["users"] });
-      // Reset form after successful registration
-      setFormData({
-        username: "",
-        password: "",
-        passwordConfirm: "",
-        email: "",
-        first: "",
-        last: "",
-        phone: "",
-        creditCard: {
-          pan: "",
-          expiryMonth: 0,
-          expiryYear: 0,
-        },
-      });
-    },
-    onError: (error) => {
-      console.error("Registration failed:", error);
-    },
-  });
+  const { register, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState<
     Omit<User, "id" | "adminUser" | "isServer" | "imageUrl"> & {
@@ -104,9 +64,16 @@ const Register = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordConfirm, ...userData } = formData;
 
-    mutate(userData);
+    register(userData);
+
     console.log("Registration data:", userData);
   };
+
+  if (isAuthenticated) {
+    // If already logged in, redirect to home or dashboard
+    navigate({ to: "/" });
+    return null; // Prevent rendering the login form
+  }
 
   return (
     <Box
@@ -134,14 +101,6 @@ const Register = () => {
       {/* Registration Form */}
       <Container maxWidth="sm" sx={{ flex: 1, py: 4 }}>
         <Paper elevation={3} sx={{ p: 4, backgroundColor: "white" }}>
-          {error && (
-            <Alert severity="error" sx={{ mb: 3 }} onClose={() => reset()}>
-              Registration failed:{" "}
-              {error instanceof Error
-                ? error.message
-                : "An unexpected error occurred"}
-            </Alert>
-          )}
           <form onSubmit={handleSubmit}>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
               <TextField
@@ -256,7 +215,6 @@ const Register = () => {
                 <Button
                   type="submit"
                   variant="contained"
-                  disabled={isPending}
                   sx={{
                     backgroundColor: "#666",
                     "&:hover": {
