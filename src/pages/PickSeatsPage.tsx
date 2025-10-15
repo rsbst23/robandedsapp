@@ -1,6 +1,8 @@
 import { Button, Box, Typography, Paper } from "@mui/material";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Reservation, type Showing, type Theater } from "../types/types";
 
 interface PickSeatsPageProps {
   showingId: number;
@@ -22,6 +24,34 @@ const PickSeatsPage = ({ showingId }: PickSeatsPageProps) => {
   const navigate = useNavigate();
   const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
 
+  const { data: showingData } = useQuery<Showing>({
+    queryKey: ["showing", showingId],
+    queryFn: () =>
+      fetch(`http://localhost:3008/api/showings/${showingId}`).then((res) =>
+        res.json()
+      ),
+  });
+
+  const { data: theaterData } = useQuery<Theater>({
+    queryKey: ["theater", showingData?.theater_id],
+    queryFn: () =>
+      fetch(`http://localhost:3008/Theaters/${showingData!.theater_id}`).then(
+        (res) => res.json()
+      ),
+    enabled: !!showingData?.theater_id,
+  });
+
+  //http://localhost:3008/showings/1/reservations
+  const { data: reservationsData } = useQuery<Reservation[]>({
+    queryKey: ["reservations", showingId],
+    queryFn: () =>
+      fetch(`http://localhost:3008/showings/${showingId}/reservations`).then(
+        (res) => res.json()
+      ),
+    enabled: !!showingData?.theater_id,
+  });
+
+  console.log(showingData, theaterData, reservationsData);
   // Mock theater data - replace with actual API data
   const tables: Table[] = [
     {
