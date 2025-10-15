@@ -12,7 +12,7 @@ function RootComponent() {
     <>
       <Header />
       <Outlet />
-      <footer>Copyright 2024 Troiana Sucks Inc</footer>
+      <footer>Copyright 2024 Troiana is Awesome Inc</footer>
     </>
   );
 }
