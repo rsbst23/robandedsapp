@@ -1,5 +1,7 @@
 import { Box, Typography, Container, Link } from "@mui/material";
 import type { Film } from "../types/types";
+import DatePicker from "./DatePicker";
+import ShowingTimes from "./ShowingTimes";
 
 interface MovieDetailsProps {
   film: Film;
@@ -103,6 +105,8 @@ const MovieDetails = ({ film }: MovieDetailsProps) => {
               </Link>
             )}
           </Box>
+          <DatePicker showTitle={false} />
+          <ShowingTimes filmId={film.id} />
         </Box>
       </Box>
     </Container>

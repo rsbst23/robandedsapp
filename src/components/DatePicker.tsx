@@ -3,7 +3,7 @@ import { List, ListItem, ListItemText } from "@mui/material";
 import "./DatePicker.css";
 import { useGlobalStore } from "../stores/filmStore";
 
-const DatePicker = () => {
+const DatePicker = ({ showTitle = true }: { showTitle?: boolean }) => {
   const { selectedDate, setSelectedDate } = useGlobalStore();
   const startDate = new Date(2025, 9, 12); // October 12, 2025 (month is 0-indexed)
 
@@ -29,14 +29,16 @@ const DatePicker = () => {
   return (
     <Box className="date-picker-container">
       <Paper elevation={3} className="date-picker-paper">
-        <Typography
-          variant="h3"
-          component="h1"
-          className="date-picker-title"
-          gutterBottom
-        >
-          Showings for {getSelectedDateString(selectedDate)}
-        </Typography>
+        {showTitle && (
+          <Typography
+            variant="h3"
+            component="h1"
+            className="date-picker-title"
+            gutterBottom
+          >
+            Showings for {getSelectedDateString(selectedDate)}
+          </Typography>
+        )}
         <Container className="days-container">
           <List className="days-list">
             {datesList.map((date) => {
