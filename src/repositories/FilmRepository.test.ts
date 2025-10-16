@@ -2,7 +2,7 @@ import { test, expect, describe, vi } from "vitest";
 import { filmRepository } from "./FilmRepository";
 import type { Film } from "../types/types";
 
-var films: Film[] = [
+const films: Film[] = [
   {
     id: 1,
     title: "The Matrix",
