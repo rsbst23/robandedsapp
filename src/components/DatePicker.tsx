@@ -2,6 +2,7 @@ import { Container, Typography, Paper, Box } from "@mui/material";
 import { List, ListItem, ListItemText } from "@mui/material";
 import "./DatePicker.css";
 import { useGlobalStore } from "../stores/filmStore";
+import { getSelectedDateString } from "./DateUtilties";
 
 const DatePicker = ({ showTitle = true }: { showTitle?: boolean }) => {
   const { selectedDate, setSelectedDate } = useGlobalStore();
@@ -16,14 +17,6 @@ const DatePicker = ({ showTitle = true }: { showTitle?: boolean }) => {
 
   const handleDayClick = (date: Date) => {
     setSelectedDate(date);
-  };
-
-  const getSelectedDateString = (selectedDate?: Date | null) => {
-    return selectedDate?.toLocaleDateString("en-US", {
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-    });
   };
 
   return (
