@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import MovieDetails from "../components/MovieDetails";
 import type { Film } from "../types/types";
+import { filmRepository } from "../repositories/FilmRepository";
 
 interface MovieDetailsPageProps {
   filmId: number;
@@ -8,25 +9,41 @@ interface MovieDetailsPageProps {
 
 const MovieDetailsPage = ({ filmId }: MovieDetailsPageProps) => {
   const [film, setFilm] = useState<Film | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchMovies = async (): Promise<void> => {
+    const fetchFilm = async (): Promise<void> => {
+      setLoading(true);
+      setError(null);
+
       try {
-        const response = await fetch(`http://localhost:3008/Films/${filmId}`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data: Film = await response.json();
+        const data = await filmRepository.getFilmById(filmId);
         setFilm(data);
       } catch (error) {
-        console.error("Error fetching movies:", error);
+        setError("Failed to load movie details. Please try again.");
+        console.error("Error fetching film:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchMovies();
+    fetchFilm();
   }, [filmId]);
 
-  return film ? <MovieDetails film={film} /> : null;
+  if (loading) {
+    return <div>Loading movie details...</div>;
+  }
+
+  if (error) {
+    return <div style={{ color: "red" }}>{error}</div>;
+  }
+
+  if (!film) {
+    return <div>Movie not found.</div>;
+  }
+
+  return <MovieDetails film={film} />;
 };
 
 export default MovieDetailsPage;
