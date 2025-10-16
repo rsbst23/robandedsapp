@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "@tanstack/react-router";
 
@@ -10,12 +9,10 @@ import {
   Typography,
   Container,
   Paper,
-  Alert,
 } from "@mui/material";
 import type { User } from "../types/types";
 
 const Register = () => {
-  const queryClient = useQueryClient();
   const { register, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 

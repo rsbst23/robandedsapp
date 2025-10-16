@@ -21,19 +21,34 @@ const Header = () => {
         </Typography>
         <Box sx={{ display: "flex", gap: 2 }}>
           {!isAuthenticated ? (
-            <Button
-              color="inherit"
-              component={Link}
-              to="/login"
-              sx={{
-                textTransform: "none",
-                "&:hover": {
-                  backgroundColor: "rgba(255, 255, 255, 0.1)",
-                },
-              }}
-            >
-              Login
-            </Button>
+            <Box sx={{ display: "flex", gap: 2 }}>
+              <Button
+                color="inherit"
+                component={Link}
+                to="/login"
+                sx={{
+                  textTransform: "none",
+                  "&:hover": {
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                  },
+                }}
+              >
+                Login
+              </Button>
+              <Button
+                color="inherit"
+                component={Link}
+                to="/register"
+                sx={{
+                  textTransform: "none",
+                  "&:hover": {
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                  },
+                }}
+              >
+                Register
+              </Button>
+            </Box>
           ) : (
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <Typography variant="body1" sx={{ color: "white" }}>
@@ -55,19 +70,6 @@ const Header = () => {
               </Button>
             </Box>
           )}
-          <Button
-            color="inherit"
-            component={Link}
-            to="/register"
-            sx={{
-              textTransform: "none",
-              "&:hover": {
-                backgroundColor: "rgba(255, 255, 255, 0.1)",
-              },
-            }}
-          >
-            Register
-          </Button>
         </Box>
       </Toolbar>
     </AppBar>
