@@ -10,12 +10,25 @@ export const useAuth = () => {
     logout: storeLogout,
   } = useAuthStore();
 
-  const login = async (
+  const loginCustomer = async (
     uname: string,
     pass: string
   ): Promise<User | undefined> => {
     const u = await doLoginStuff(uname, pass);
-    if (u) {
+    if (u && u.isServer === false) {
+      setUser(u);
+      setIsAuthenticated(true);
+      return u; // Return the user data for immediate use
+    }
+    return undefined;
+  };
+
+    const loginWaiter = async (
+    uname: string,
+    pass: string
+  ): Promise<User | undefined> => {
+    const u = await doLoginStuff(uname, pass);
+    if (u && u.isServer === true) {
       setUser(u);
       setIsAuthenticated(true);
       return u; // Return the user data for immediate use
@@ -77,5 +90,5 @@ export const useAuth = () => {
     }
   };
 
-  return { user, isAuthenticated, login, logout, register };
+  return { user, isAuthenticated, loginCustomer, logout, register, loginWaiter };
 };
