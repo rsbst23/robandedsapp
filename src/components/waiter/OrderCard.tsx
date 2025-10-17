@@ -1,4 +1,5 @@
-import { Card, CardContent, Typography, Box, Chip, Divider } from '@mui/material';
+import { Card, CardContent, Typography, Box, Chip, Divider, Modal } from '@mui/material';
+import { useState } from 'react';
 import { 
   CheckCircle, 
   HourglassEmpty, 
@@ -8,15 +9,53 @@ import {
   Assignment,
   FiberNew,
   NotificationImportant,
-  Warning
+  Warning,
+  Close
 } from '@mui/icons-material';
 import type { Order } from '../../types/types';
+import { useWaiterStore } from '../../stores/waiterStore';
 
 interface OrderCardProps {
-  order: Order;
+  orderId: number;
+  variant?: 'full' | 'compact';
 }
 
-const OrderCard = ({ order }: OrderCardProps) => {
+const OrderCard = ({ orderId, variant = 'full' }: OrderCardProps) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const { updateOrderStatus, orders } = useWaiterStore();
+
+  // Get the order data from the store
+  const order = orders.find(o => o.id === orderId);
+  
+  // If order not found, show error
+  if (!order) {
+    return (
+      <Box p={2}>
+        <Typography color="error">Order #{orderId} not found</Typography>
+      </Box>
+    );
+  }
+
+  // For both variants, always use fresh data from store
+  const displayOrder = order;
+
+  const handleProblemClick = () => {
+    // Use setTimeout to break out of any potential form submission context
+    setTimeout(async () => {
+      console.log('Problem button clicked for order:', displayOrder.id);
+      setIsUpdatingStatus(true);
+      try {
+        await updateOrderStatus(displayOrder.id, 'problem');
+        console.log('Order status updated successfully');
+      } catch (error) {
+        console.error('Error updating order status:', error);
+      } finally {
+        setIsUpdatingStatus(false);
+      }
+    }, 0);
+  };
+
   const getStatusConfig = (status: string) => {
     switch (status.toLowerCase()) {
       case 'completed':
@@ -54,21 +93,135 @@ const OrderCard = ({ order }: OrderCardProps) => {
   };
 
   const getTotalAmount = () => {
-    const subtotal = order.items.reduce((sum, item) => sum + item.price, 0);
-    return subtotal + order.tax + order.tip;
+    const subtotal = displayOrder.items.reduce((sum, item) => sum + item.price, 0);
+    return subtotal + displayOrder.tax + displayOrder.tip;
   };
 
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
+
+  // Compact version for OrderRow
+  if (variant === 'compact') {
+    return (
+      <>
+        <Card 
+          sx={{ 
+            mb: 2, 
+            boxShadow: 1, 
+            cursor: 'pointer',
+            '&:hover': {
+              boxShadow: 3,
+              transform: 'translateY(-1px)',
+              transition: 'all 0.2s ease-in-out'
+            }
+          }}
+          onClick={handleOpenModal}
+        >
+        <CardContent sx={{ pb: 2 }}>
+          <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+            <Box flex={1}>
+              <Box display="flex" alignItems="center" gap={2} mb={1}>
+                <Typography variant="h6" component="h3">
+                  Order #{order.id}
+                </Typography>
+                <Chip 
+                  icon={getStatusConfig(order.status).icon}
+                  label={getStatusConfig(order.status).label} 
+                  color={getStatusConfig(order.status).color}
+                  variant="filled"
+                  size="small"
+                />
+              </Box>
+              
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                Location: {order.area} - {order.location}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                Order Time: {formatTime(order.orderTime)}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Pickup Time: {formatTime(order.pickupTime)}
+              </Typography>
+            </Box>
+            
+            <Box textAlign="right" ml={2}>
+              <Typography variant="h6" color="primary" fontWeight="bold">
+                ${getTotalAmount().toFixed(2)}
+              </Typography>
+            </Box>
+          </Box>
+        </CardContent>
+        </Card>
+
+        {/* Modal for full order details */}
+        <Modal
+          open={isModalOpen}
+          onClose={handleCloseModal}
+          sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          <Box
+            sx={{
+              bgcolor: 'background.paper',
+              borderRadius: 2,
+              boxShadow: 24,
+              p: 0,
+              width: '800px',
+              maxHeight: '800px',
+              overflow: 'auto',
+              position: 'relative'
+            }}
+          >
+            <Box
+              sx={{
+                position: 'sticky',
+                top: 0,
+                bgcolor: 'background.paper',
+                zIndex: 1,
+                p: 2,
+                borderBottom: 1,
+                borderColor: 'divider',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}
+            >
+              <Typography variant="h6">Order Details</Typography>
+              <Box
+                component="button"
+                onClick={handleCloseModal}
+                sx={{
+                  border: 'none',
+                  background: 'none',
+                  cursor: 'pointer',
+                  p: 1,
+                  borderRadius: 1,
+                  '&:hover': { bgcolor: 'action.hover' }
+                }}
+              >
+                <Close />
+              </Box>
+            </Box>
+            <Box sx={{ p: 0 }}>
+              <OrderCard orderId={orderId} variant="full" />
+            </Box>
+          </Box>
+        </Modal>
+      </>
+    );
+  }
+
+  // Full version (existing implementation)
   return (
-    <Card sx={{ mb: 2, boxShadow: 2 }}>
+    <Card sx={{ mb: 2, boxShadow: variant === 'full' ? 0 : 2, border: 'none' }}>
       <CardContent>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <Typography variant="h6" component="h2">
-            Order #{order.id}
+            Order #{displayOrder.id}
           </Typography>
           <Chip 
-            icon={getStatusConfig(order.status).icon}
-            label={getStatusConfig(order.status).label} 
-            color={getStatusConfig(order.status).color}
+            icon={getStatusConfig(displayOrder.status).icon}
+            label={getStatusConfig(displayOrder.status).label} 
+            color={getStatusConfig(displayOrder.status).color}
             variant="filled"
           />
         </Box>
@@ -76,14 +229,41 @@ const OrderCard = ({ order }: OrderCardProps) => {
         <Box display="flex" justifyContent="space-between" mb={2}>
           <Box>
             <Typography variant="body2" color="text.secondary">
-              Location: {order.area} - {order.location}
+              Location: {displayOrder.area} - {displayOrder.location}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Order Time: {formatTime(order.orderTime)}
+              Order Time: {formatTime(displayOrder.orderTime)}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Pickup Time: {formatTime(order.pickupTime)}
+              Pickup Time: {formatTime(displayOrder.pickupTime)}
             </Typography>
+            {displayOrder.status.toLowerCase() !== 'problem' && (
+              <Box mt={1}>
+                <Box
+                  onClick={handleProblemClick}
+                  sx={{
+                    display: 'inline-block',
+                    px: 2,
+                    py: 1,
+                    backgroundColor: isUpdatingStatus ? 'grey.400' : 'error.main',
+                    color: 'white',
+                    borderRadius: 1,
+                    cursor: isUpdatingStatus ? 'not-allowed' : 'pointer',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    userSelect: 'none',
+                    '&:hover': {
+                      backgroundColor: isUpdatingStatus ? 'grey.400' : 'error.dark',
+                    },
+                    '&:active': {
+                      backgroundColor: isUpdatingStatus ? 'grey.400' : 'error.darker',
+                    }
+                  }}
+                >
+                  {isUpdatingStatus ? 'Updating...' : 'Problem'}
+                </Box>
+              </Box>
+            )}
           </Box>
           <Box textAlign="right">
             <Typography variant="h6" color="primary">
@@ -95,26 +275,35 @@ const OrderCard = ({ order }: OrderCardProps) => {
         <Divider sx={{ my: 2 }} />
         
         <Typography variant="subtitle1" gutterBottom>
-          Items ({order.items.length}):
+          Items ({displayOrder.items.length}):
         </Typography>
         
-        {order.items.map((item) => (
-          <Box key={item.id} display="flex" justifyContent="space-between" mb={1}>
-            <Box>
-              <Typography variant="body2">
-                Item #{item.itemId} - {item.firstName}
-              </Typography>
-              {item.notes && (
-                <Typography variant="caption" color="text.secondary">
-                  Notes: {item.notes}
+        <Box 
+          sx={{ 
+            maxHeight: '300px', 
+            overflow: 'auto',
+            p: 1,
+            mb: 2
+          }}
+        >
+          {displayOrder.items.map((item) => (
+            <Box key={item.id} display="flex" justifyContent="space-between" mb={1}>
+              <Box>
+                <Typography variant="body2">
+                  Item #{item.itemId} - {item.firstName}
                 </Typography>
-              )}
+                {item.notes && (
+                  <Typography variant="caption" color="text.secondary">
+                    Notes: {item.notes}
+                  </Typography>
+                )}
+              </Box>
+              <Typography variant="body2">
+                ${item.price.toFixed(2)}
+              </Typography>
             </Box>
-            <Typography variant="body2">
-              ${item.price.toFixed(2)}
-            </Typography>
-          </Box>
-        ))}
+          ))}
+        </Box>
         
         <Divider sx={{ my: 1 }} />
         
@@ -122,16 +311,16 @@ const OrderCard = ({ order }: OrderCardProps) => {
           <Box display="flex" justifyContent="space-between">
             <Typography variant="body2">Subtotal:</Typography>
             <Typography variant="body2">
-              ${order.items.reduce((sum, item) => sum + item.price, 0).toFixed(2)}
+              ${displayOrder.items.reduce((sum, item) => sum + item.price, 0).toFixed(2)}
             </Typography>
           </Box>
           <Box display="flex" justifyContent="space-between">
             <Typography variant="body2">Tax:</Typography>
-            <Typography variant="body2">${order.tax.toFixed(2)}</Typography>
+            <Typography variant="body2">${displayOrder.tax.toFixed(2)}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between">
             <Typography variant="body2">Tip:</Typography>
-            <Typography variant="body2">${order.tip.toFixed(2)}</Typography>
+            <Typography variant="body2">${displayOrder.tip.toFixed(2)}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between" fontWeight="bold">
             <Typography variant="body1" fontWeight="bold">Total:</Typography>
@@ -143,10 +332,10 @@ const OrderCard = ({ order }: OrderCardProps) => {
         
         <Box mt={2}>
           <Typography variant="caption" color="text.secondary">
-            {order.creditCard && order.creditCard.pan ? (
+            {displayOrder.creditCard && displayOrder.creditCard.pan ? (
               <>
-                Payment: ****{order.creditCard.pan.slice(-4)} 
-                ({order.creditCard.expiryMonth?.toString().padStart(2, '0') || 'XX'}/{order.creditCard.expiryYear || 'XXXX'})
+                Payment: ****{displayOrder.creditCard.pan.slice(-4)} 
+                ({displayOrder.creditCard.expiryMonth?.toString().padStart(2, '0') || 'XX'}/{displayOrder.creditCard.expiryYear || 'XXXX'})
               </>
             ) : (
               'Payment: No card information available'

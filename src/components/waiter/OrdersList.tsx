@@ -11,7 +11,7 @@ interface OrdersListProps {
   ordersPerPage?: number;
 }
 
-const OrdersList = ({ theaterId, excludeTheaterId, theaterName, ordersPerPage = 3 }: OrdersListProps) => {
+const OrdersList = ({ theaterId, excludeTheaterId, theaterName, ordersPerPage = 5 }: OrdersListProps) => {
   const { orders, loading, error, fetchOrders, clearError } = useWaiterStore();
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -156,7 +156,7 @@ const OrdersList = ({ theaterId, excludeTheaterId, theaterName, ordersPerPage = 
       ) : (
         <Box>
           {paginatedOrders.map((order) => (
-            <OrderCard key={order.id} order={order} />
+            <OrderCard key={order.id} orderId={order.id} variant="compact" />
           ))}
           
           {totalPages > 1 && (

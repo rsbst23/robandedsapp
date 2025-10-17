@@ -24,7 +24,7 @@ interface WaiterStore {
   setOrders: (orders: Order[]) => void;
   fetchOrders: () => Promise<void>;
   addOrder: (order: Order) => void;
-  updateOrderStatus: (id: number, status: string) => void;
+  updateOrderStatus: (id: number, status: string) => Promise<void>;
   removeOrder: (id: number) => void;
   clearError: () => void;
 }
@@ -98,11 +98,36 @@ export const useWaiterStore = create<WaiterStore>()(
         orders: [...state.orders, order]
       })),
 
-      updateOrderStatus: (id, status) => set((state) => ({
-        orders: state.orders.map(order => 
-          order.id === id ? { ...order, status } : order
-        )
-      })),
+      updateOrderStatus: async (id, status) => {
+        set({ loading: true, error: null });
+        try {
+          const response = await fetch(`http://localhost:3008/orders/${id}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ status }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`Failed to update order status: ${response.statusText}`);
+          }
+
+          // Update local state after successful API call
+          set((state) => ({
+            orders: state.orders.map(order => 
+              order.id === id ? { ...order, status } : order
+            ),
+            loading: false
+          }));
+        } catch (error) {
+          set({ 
+            error: error instanceof Error ? error.message : 'An error occurred while updating order status',
+            loading: false 
+          });
+          throw error; // Re-throw to allow handling in components
+        }
+      },
 
       removeOrder: (id) => set((state) => ({
         orders: state.orders.filter(order => order.id !== id)
