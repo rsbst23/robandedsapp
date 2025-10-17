@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 import { create } from 'zustand';
 import type { Order } from '../types/types';
+=======
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import type { Theater } from "../types/types";
+>>>>>>> 0f0198b2f9b0753c51a5eea5b90a4e114e405fbe
 
-interface WaiterStore  {
+interface WaiterStore {
   selectedTheater: number;
+<<<<<<< HEAD
   setSelectedTheater: (theaterId: number) => void;
   
   // Orders functionality
@@ -67,3 +74,61 @@ export const useWaiterStore = create<WaiterStore>((set) => ({
   // Clear error
   clearError: () => set({ error: null }),
 }));
+=======
+  assignedTheaterId: number | null;
+  assignedTheater: Theater | null;
+  assignmentTimestamp: Date | null;
+  isAssigned: boolean;
+
+  // Actions
+  setSelectedTheater: (theaterId: number) => void;
+  assignToTheater: (theaterId: number, theater: Theater) => void;
+  clearAssignment: () => void;
+  updateAssignedTheater: (theater: Theater) => void;
+}
+
+export const useWaiterStore = create<WaiterStore>()(
+  persist(
+    (set, get) => ({
+      selectedTheater: 0,
+      assignedTheaterId: null,
+      assignedTheater: null,
+      assignmentTimestamp: null,
+      isAssigned: false,
+
+      setSelectedTheater: (theaterId) => set({ selectedTheater: theaterId }),
+
+      assignToTheater: (theaterId: number, theater: Theater) => {
+        set({
+          selectedTheater: theaterId,
+          assignedTheaterId: theaterId,
+          assignedTheater: theater,
+          assignmentTimestamp: new Date(),
+          isAssigned: true,
+        });
+      },
+
+      clearAssignment: () => {
+        set({
+          assignedTheaterId: null,
+          assignedTheater: null,
+          assignmentTimestamp: null,
+          isAssigned: false,
+        });
+      },
+
+      updateAssignedTheater: (theater: Theater) => {
+        const state = get();
+        if (state.assignedTheaterId === theater.id) {
+          set({
+            assignedTheater: theater,
+          });
+        }
+      },
+    }),
+    {
+      name: "waiter-assignment-storage", // name of the item in localStorage
+    }
+  )
+);
+>>>>>>> 0f0198b2f9b0753c51a5eea5b90a4e114e405fbe
