@@ -47,76 +47,14 @@ const OrderCard = ({ orderId, variant = "full" }: OrderCardProps) => {
   // For both variants, always use fresh data from store
   const displayOrder = order;
 
-  const handleProblemClick = () => {
+  // Single generic handler for all status updates
+  const handleStatusUpdate = (newStatus: string, actionLabel: string) => {
     // Use setTimeout to break out of any potential form submission context
     setTimeout(async () => {
-      console.log("Problem button clicked for order:", displayOrder.id);
+      console.log(`${actionLabel} button clicked for order:`, displayOrder.id);
       setIsUpdatingStatus(true);
       try {
-        await updateOrderStatus(displayOrder.id, "problem");
-        console.log("Order status updated successfully");
-      } catch (error) {
-        console.error("Error updating order status:", error);
-      } finally {
-        setIsUpdatingStatus(false);
-      }
-    }, 0);
-  };
-
-  const handlePickupClick = () => {
-    // Use setTimeout to break out of any potential form submission context
-    setTimeout(async () => {
-      console.log("Pick up button clicked for order:", displayOrder.id);
-      setIsUpdatingStatus(true);
-      try {
-        await updateOrderStatus(displayOrder.id, "pickedup");
-        console.log("Order status updated successfully");
-      } catch (error) {
-        console.error("Error updating order status:", error);
-      } finally {
-        setIsUpdatingStatus(false);
-      }
-    }, 0);
-  };
-
-  const handleReadyForGuestClick = () => {
-    // Use setTimeout to break out of any potential form submission context
-    setTimeout(async () => {
-      console.log("Ready for Guest button clicked for order:", displayOrder.id);
-      setIsUpdatingStatus(true);
-      try {
-        await updateOrderStatus(displayOrder.id, "readyforguest");
-        console.log("Order status updated successfully");
-      } catch (error) {
-        console.error("Error updating order status:", error);
-      } finally {
-        setIsUpdatingStatus(false);
-      }
-    }, 0);
-  };
-
-  const handleDeliveredClick = () => {
-    // Use setTimeout to break out of any potential form submission context
-    setTimeout(async () => {
-      console.log("Delivered button clicked for order:", displayOrder.id);
-      setIsUpdatingStatus(true);
-      try {
-        await updateOrderStatus(displayOrder.id, "delivered");
-        console.log("Order status updated successfully");
-      } catch (error) {
-        console.error("Error updating order status:", error);
-      } finally {
-        setIsUpdatingStatus(false);
-      }
-    }, 0);
-  };
-  const handleCompleteClick = () => {
-    // Use setTimeout to break out of any potential form submission context
-    setTimeout(async () => {
-      console.log("Complete button clicked for order:", displayOrder.id);
-      setIsUpdatingStatus(true);
-      try {
-        await updateOrderStatus(displayOrder.id, "completed");
+        await updateOrderStatus(displayOrder.id, newStatus);
         console.log("Order status updated successfully");
       } catch (error) {
         console.error("Error updating order status:", error);
@@ -210,6 +148,84 @@ const OrderCard = ({ orderId, variant = "full" }: OrderCardProps) => {
       0
     );
     return subtotal + displayOrder.tax + displayOrder.tip;
+  };
+
+  // Reusable button component
+  const ActionButton = ({
+    onClick,
+    label,
+  }: {
+    onClick: () => void;
+    label: string;
+  }) => (
+    <Box
+      onClick={onClick}
+      sx={{
+        display: "inline-block",
+        px: 2,
+        py: 1,
+        backgroundColor: isUpdatingStatus ? "grey.400" : "error.main",
+        color: "white",
+        borderRadius: 1,
+        cursor: isUpdatingStatus ? "not-allowed" : "pointer",
+        fontSize: "0.875rem",
+        fontWeight: 500,
+        userSelect: "none",
+        mr: 1,
+        mb: 1,
+        "&:hover": {
+          backgroundColor: isUpdatingStatus ? "grey.400" : "error.dark",
+        },
+        "&:active": {
+          backgroundColor: isUpdatingStatus ? "grey.400" : "error.darker",
+        },
+      }}
+    >
+      {isUpdatingStatus ? "Updating..." : label}
+    </Box>
+  );
+
+  // Define available actions based on current status
+  const getAvailableActions = () => {
+    const actions = [];
+    const status = displayOrder.status.toLowerCase();
+
+    switch (status) {
+      case "readyforguest":
+        actions.push({
+          onClick: () => handleStatusUpdate("pickedup", "Pick up"),
+          label: "Pick up",
+        });
+        break;
+      case "pickedup":
+        actions.push({
+          onClick: () => handleStatusUpdate("delivered", "Delivered"),
+          label: "Delivered",
+        });
+        break;
+      case "delivered":
+        actions.push({
+          onClick: () => handleStatusUpdate("completed", "Complete"),
+          label: "Complete",
+        });
+        break;
+      case "new":
+        actions.push({
+          onClick: () => handleStatusUpdate("readyforguest", "Ready for Guest"),
+          label: "Ready for Guest",
+        });
+        break;
+    }
+
+    // Always show problem button unless status is already problem
+    if (status !== "problem") {
+      actions.push({
+        onClick: () => handleStatusUpdate("problem", "Problem"),
+        label: "Problem",
+      });
+    }
+
+    return actions;
   };
 
   const handleOpenModal = () => setIsModalOpen(true);
@@ -373,170 +389,15 @@ const OrderCard = ({ orderId, variant = "full" }: OrderCardProps) => {
             <Typography variant="body2" color="text.secondary">
               Pickup Time: {formatTime(displayOrder.pickupTime)}
             </Typography>
-            {displayOrder.status.toLowerCase() == "readyforguest" && (
+            {getAvailableActions().length > 0 && (
               <Box mt={1}>
-                <Box
-                  onClick={handlePickupClick}
-                  sx={{
-                    display: "inline-block",
-                    px: 2,
-                    py: 1,
-                    backgroundColor: isUpdatingStatus
-                      ? "grey.400"
-                      : "error.main",
-                    color: "white",
-                    borderRadius: 1,
-                    cursor: isUpdatingStatus ? "not-allowed" : "pointer",
-                    fontSize: "0.875rem",
-                    fontWeight: 500,
-                    userSelect: "none",
-                    "&:hover": {
-                      backgroundColor: isUpdatingStatus
-                        ? "grey.400"
-                        : "error.dark",
-                    },
-                    "&:active": {
-                      backgroundColor: isUpdatingStatus
-                        ? "grey.400"
-                        : "error.darker",
-                    },
-                  }}
-                >
-                  {isUpdatingStatus ? "Updating..." : "Pick up"}
-                </Box>
-              </Box>
-            )}
-            {displayOrder.status.toLowerCase() == "pickedup" && (
-              <Box mt={1}>
-                <Box
-                  onClick={handleDeliveredClick}
-                  sx={{
-                    display: "inline-block",
-                    px: 2,
-                    py: 1,
-                    backgroundColor: isUpdatingStatus
-                      ? "grey.400"
-                      : "error.main",
-                    color: "white",
-                    borderRadius: 1,
-                    cursor: isUpdatingStatus ? "not-allowed" : "pointer",
-                    fontSize: "0.875rem",
-                    fontWeight: 500,
-                    userSelect: "none",
-                    "&:hover": {
-                      backgroundColor: isUpdatingStatus
-                        ? "grey.400"
-                        : "error.dark",
-                    },
-                    "&:active": {
-                      backgroundColor: isUpdatingStatus
-                        ? "grey.400"
-                        : "error.darker",
-                    },
-                  }}
-                >
-                  {isUpdatingStatus ? "Updating..." : "Delivered"}
-                </Box>
-              </Box>
-            )}
-            {displayOrder.status.toLowerCase() == "delivered" && (
-              <Box mt={1}>
-                <Box
-                  onClick={handleCompleteClick}
-                  sx={{
-                    display: "inline-block",
-                    px: 2,
-                    py: 1,
-                    backgroundColor: isUpdatingStatus
-                      ? "grey.400"
-                      : "error.main",
-                    color: "white",
-                    borderRadius: 1,
-                    cursor: isUpdatingStatus ? "not-allowed" : "pointer",
-                    fontSize: "0.875rem",
-                    fontWeight: 500,
-                    userSelect: "none",
-                    "&:hover": {
-                      backgroundColor: isUpdatingStatus
-                        ? "grey.400"
-                        : "error.dark",
-                    },
-                    "&:active": {
-                      backgroundColor: isUpdatingStatus
-                        ? "grey.400"
-                        : "error.darker",
-                    },
-                  }}
-                >
-                  {isUpdatingStatus ? "Updating..." : "Complete"}
-                </Box>
-              </Box>
-            )}
-            {displayOrder.status.toLowerCase() == "new" && (
-              <Box mt={1}>
-                <Box
-                  onClick={handleReadyForGuestClick}
-                  sx={{
-                    display: "inline-block",
-                    px: 2,
-                    py: 1,
-                    backgroundColor: isUpdatingStatus
-                      ? "grey.400"
-                      : "error.main",
-                    color: "white",
-                    borderRadius: 1,
-                    cursor: isUpdatingStatus ? "not-allowed" : "pointer",
-                    fontSize: "0.875rem",
-                    fontWeight: 500,
-                    userSelect: "none",
-                    "&:hover": {
-                      backgroundColor: isUpdatingStatus
-                        ? "grey.400"
-                        : "error.dark",
-                    },
-                    "&:active": {
-                      backgroundColor: isUpdatingStatus
-                        ? "grey.400"
-                        : "error.darker",
-                    },
-                  }}
-                >
-                  {isUpdatingStatus ? "Updating..." : "Ready for Guest"}
-                </Box>
-              </Box>
-            )}
-
-            {displayOrder.status.toLowerCase() !== "problem" && (
-              <Box mt={1}>
-                <Box
-                  onClick={handleProblemClick}
-                  sx={{
-                    display: "inline-block",
-                    px: 2,
-                    py: 1,
-                    backgroundColor: isUpdatingStatus
-                      ? "grey.400"
-                      : "error.main",
-                    color: "white",
-                    borderRadius: 1,
-                    cursor: isUpdatingStatus ? "not-allowed" : "pointer",
-                    fontSize: "0.875rem",
-                    fontWeight: 500,
-                    userSelect: "none",
-                    "&:hover": {
-                      backgroundColor: isUpdatingStatus
-                        ? "grey.400"
-                        : "error.dark",
-                    },
-                    "&:active": {
-                      backgroundColor: isUpdatingStatus
-                        ? "grey.400"
-                        : "error.darker",
-                    },
-                  }}
-                >
-                  {isUpdatingStatus ? "Updating..." : "Problem"}
-                </Box>
+                {getAvailableActions().map((action, index) => (
+                  <ActionButton
+                    key={index}
+                    onClick={action.onClick}
+                    label={action.label}
+                  />
+                ))}
               </Box>
             )}
           </Box>
