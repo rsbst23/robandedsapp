@@ -2,7 +2,7 @@ import { test, expect, describe, vi } from "vitest";
 import { showingRepository } from "./ShowingRepository";
 import type { Showing } from "../types/types";
 
-var showings: Showing[] = [
+const showings: Showing[] = [
   {
     id: 1,
     film_id: 1,
