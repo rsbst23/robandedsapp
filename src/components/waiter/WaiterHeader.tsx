@@ -2,19 +2,15 @@ import React from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useAuthStore } from "../../stores/authStore";
 
-interface WaiterHeaderProps {
-  userName?: string;
-}
-
-const WaiterHeader: React.FC<WaiterHeaderProps> = ({ userName }) => {
+const WaiterHeader = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuthStore();
+  const { user, logout, isAuthenticated } = useAuthStore();
 
-  const displayName = userName || user?.first || "USER";
+  const displayName = user?.first || "";
 
   const handleLogout = () => {
     logout();
-    navigate({ to: "/login" });
+    navigate({ to: "/waiterlogin" });
   };
 
   return (
@@ -25,27 +21,53 @@ const WaiterHeader: React.FC<WaiterHeaderProps> = ({ userName }) => {
           background-color: rgba(255, 255, 255, 0.1) !important;
         }
       `}</style>
+      ``
       <header style={headerStyles}>
         <nav style={navStyles}>
           <div style={navItemsStyles}>
             <Link to="/" style={linkStyles} className="waiter-nav-link">
               MAIN
             </Link>
-            <Link to="/orders" style={linkStyles} className="waiter-nav-link">
-              ORDERS
-            </Link>
-            <Link to="/areas" style={linkStyles} className="waiter-nav-link">
-              AREAS
-            </Link>
-            <button
-              onClick={handleLogout}
-              style={logoutButtonStyles}
-              className="waiter-logout-btn"
-            >
-              LOGOUT
-            </button>
+            {isAuthenticated && (
+              <>
+                <Link
+                  to="/orders"
+                  style={linkStyles}
+                  className="waiter-nav-link"
+                >
+                  ORDERS
+                </Link>
+                <Link
+                  to="/areas"
+                  style={linkStyles}
+                  className="waiter-nav-link"
+                >
+                  AREAS
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  style={logoutButtonStyles}
+                  className="waiter-logout-btn"
+                >
+                  Logout
+                </button>
+              </>
+            )}
+            {!isAuthenticated && (
+              <>
+                <Link
+                  to="/waiterlogin"
+                  style={linkStyles}
+                  className="waiter-nav-link"
+                >
+                  Login
+                </Link>
+              </>
+            )}
           </div>
-          <div style={userGreetingStyles}>HELLO, {displayName}!</div>
+          {isAuthenticated && (
+            <div style={userGreetingStyles}>HELLO, {displayName}!</div>
+          )}
         </nav>
       </header>
     </>

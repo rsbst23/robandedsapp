@@ -19,7 +19,7 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const { login, user, isAuthenticated } = useAuth();
+  const { loginCustomer, user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -38,7 +38,7 @@ const LoginPage: React.FC = () => {
     }
 
     try {
-      login(username, password);
+      loginCustomer(username, password);
 
       // // Check if login was successful by checking the returned result
       // if (isAuthenticated && user) {
