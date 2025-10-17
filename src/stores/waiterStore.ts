@@ -14,6 +14,9 @@ interface WaiterStore {
   loading: boolean;
   error: string | null;
 
+  // Filter state
+  statusFilter: string;
+
   // Theater assignment actions
   setSelectedTheater: (theaterId: number) => void;
   assignToTheater: (theaterId: number, theater: Theater) => void;
@@ -27,6 +30,9 @@ interface WaiterStore {
   updateOrderStatus: (id: number, status: string) => Promise<void>;
   removeOrder: (id: number) => void;
   clearError: () => void;
+
+  // Filter actions
+  setStatusFilter: (filter: string) => void;
 }
 
 export const useWaiterStore = create<WaiterStore>()(
@@ -43,8 +49,15 @@ export const useWaiterStore = create<WaiterStore>()(
       loading: false,
       error: null,
 
+      // Filter state
+      statusFilter: 'all',
+
       // Theater assignment actions
-      setSelectedTheater: (theaterId) => set({ selectedTheater: theaterId }),
+      setSelectedTheater: (theaterId) => set({ 
+        selectedTheater: theaterId,
+        // Reset filter state when selecting a new theater
+        statusFilter: 'all',
+      }),
 
       assignToTheater: (theaterId: number, theater: Theater) => {
         set({
@@ -53,6 +66,8 @@ export const useWaiterStore = create<WaiterStore>()(
           assignedTheater: theater,
           assignmentTimestamp: new Date(),
           isAssigned: true,
+          // Reset filter state when assigning to a new area
+          statusFilter: 'all',
         });
       },
 
@@ -62,6 +77,8 @@ export const useWaiterStore = create<WaiterStore>()(
           assignedTheater: null,
           assignmentTimestamp: null,
           isAssigned: false,
+          // Reset filter state when clearing assignment
+          statusFilter: 'all',
         });
       },
 
@@ -134,6 +151,9 @@ export const useWaiterStore = create<WaiterStore>()(
       })),
 
       clearError: () => set({ error: null }),
+
+      // Filter actions
+      setStatusFilter: (filter) => set({ statusFilter: filter }),
     }),
     {
       name: "waiter-assignment-storage",

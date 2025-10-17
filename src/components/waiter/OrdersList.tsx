@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Box, Typography, CircularProgress, Alert, Button, Container, Pagination } from '@mui/material';
+import { Box, Typography, CircularProgress, Alert, Button, Container, Pagination, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { Refresh } from '@mui/icons-material';
 import { useWaiterStore } from '../../stores/waiterStore';
 import OrderCard from './OrderCard';
@@ -12,7 +12,7 @@ interface OrdersListProps {
 }
 
 const OrdersList = ({ theaterId, excludeTheaterId, theaterName, ordersPerPage = 5 }: OrdersListProps) => {
-  const { orders, loading, error, fetchOrders, clearError } = useWaiterStore();
+  const { orders, loading, error, fetchOrders, clearError, statusFilter, setStatusFilter } = useWaiterStore();
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
@@ -37,35 +37,13 @@ const OrdersList = ({ theaterId, excludeTheaterId, theaterName, ordersPerPage = 
       filtered = filtered.filter(order => order.area !== excludeTheaterArea);
     }
     
-    // Sort orders by priority: problem, new, readyforguest, then others
-    const getStatusPriority = (status: string) => {
-      switch (status.toLowerCase()) {
-        case 'problem': return 1;
-        case 'new': return 2;
-        case 'readyforguest': return 3;
-        case 'completed': return 4;
-        case 'cancelled': return 5;
-        case 'preparing': return 6;
-        case 'inprogress': return 7;
-        case 'pending': return 8;
-        default: return 9;
-      }
-    };
-    
-    filtered.sort((a, b) => {
-      const priorityA = getStatusPriority(a.status);
-      const priorityB = getStatusPriority(b.status);
-      
-      if (priorityA !== priorityB) {
-        return priorityA - priorityB;
-      }
-      
-      // If same priority, sort by order time (newest first)
-      return new Date(b.orderTime).getTime() - new Date(a.orderTime).getTime();
-    });
+    // Filter by status if a specific status is selected
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(order => order.status.toLowerCase() === statusFilter.toLowerCase());
+    }
     
     return filtered;
-  }, [orders, theaterId, excludeTheaterId]);
+  }, [orders, theaterId, excludeTheaterId, statusFilter]);
 
   // Pagination logic
   const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
@@ -78,13 +56,39 @@ const OrdersList = ({ theaterId, excludeTheaterId, theaterName, ordersPerPage = 
     setCurrentPage(1);
   }, [filteredOrders.length]);
 
-  const handleRefresh = () => {
+  // Get unique statuses for filter dropdown
+  const availableStatuses = useMemo(() => {
+    const statuses = new Set(orders.map(order => order.status.toLowerCase()));
+    return Array.from(statuses).sort();
+  }, [orders]);
+
+  const handleRefresh = (event?: React.MouseEvent) => {
+    event?.preventDefault();
+    event?.stopPropagation();
     clearError();
     fetchOrders();
   };
 
   const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
     setCurrentPage(value);
+  };
+
+  const handleStatusFilterChange = (event: any) => {
+    setStatusFilter(event.target.value as string);
+  };
+
+  // Format status names for display in the filter dropdown
+  const formatStatusLabel = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'readyforguest':
+        return 'Ready for Guest';
+      case 'inprogress':
+        return 'In Progress';
+      case 'new':
+        return 'New Order';
+      default:
+        return status.charAt(0).toUpperCase() + status.slice(1);
+    }
   };
 
   if (loading) {
@@ -104,7 +108,7 @@ const OrdersList = ({ theaterId, excludeTheaterId, theaterName, ordersPerPage = 
         <Alert 
           severity="error" 
           action={
-            <Button color="inherit" size="small" onClick={handleRefresh}>
+            <Button color="inherit" size="small" onClick={handleRefresh} type="button">
               Try Again
             </Button>
           }
@@ -126,37 +130,53 @@ const OrdersList = ({ theaterId, excludeTheaterId, theaterName, ordersPerPage = 
               : `Orders (${filteredOrders.length})`
           }
         </Typography>
-        <Button 
-          variant="outlined" 
-          startIcon={<Refresh />} 
-          onClick={handleRefresh}
-          disabled={loading}
-        >
-          Refresh
-        </Button>
+        <Box display="flex" gap={2} alignItems="center">
+          <FormControl size="small" sx={{ minWidth: 140 }}>
+            <InputLabel>Status Filter</InputLabel>
+            <Select
+              value={statusFilter}
+              label="Status Filter"
+              onChange={handleStatusFilterChange}
+            >
+              <MenuItem value="all">All Statuses</MenuItem>
+              {availableStatuses.map((status) => (
+                <MenuItem key={status} value={status}>
+                  {formatStatusLabel(status)}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Button 
+            variant="outlined" 
+            startIcon={<Refresh />} 
+            onClick={handleRefresh}
+            disabled={loading}
+            type="button"
+          >
+            Refresh
+          </Button>
+        </Box>
       </Box>
 
       {filteredOrders.length === 0 ? (
         <Box textAlign="center" py={4}>
           <Typography variant="h6" color="text.secondary">
-            {theaterId
-              ? `No orders found for ${theaterName || `Theater ${theaterId}`}` 
-              : excludeTheaterId
-                ? `No orders found in other areas` 
-                : 'No orders found'
-            }
+            No orders found
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {excludeTheaterId
-              ? `Orders from areas other than Theater ${excludeTheaterId} will appear here.`
-              : 'Orders will appear here when customers place them.'
-            }
+            {statusFilter !== 'all' ? (
+              `Try selecting a different status filter or "All Statuses" to see more orders.`
+            ) : excludeTheaterId ? (
+              `Orders from areas other than Theater ${excludeTheaterId} will appear here.`
+            ) : (
+              'Orders will appear here when customers place them.'
+            )}
           </Typography>
         </Box>
       ) : (
         <Box>
           {paginatedOrders.map((order) => (
-            <OrderCard key={order.id} orderId={order.id} variant="compact" />
+            <OrderCard key={order.id} order={order} variant="compact" />
           ))}
           
           {totalPages > 1 && (

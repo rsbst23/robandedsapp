@@ -13,21 +13,39 @@ import {
   Close
 } from '@mui/icons-material';
 import type { Order } from '../../types/types';
+import { useWaiterStore } from '../../stores/waiterStore';
 
 interface OrderCardProps {
-  orderId: number;
+  orderId?: number;
+  order?: Order;
   variant?: 'full' | 'compact';
 }
 
-const OrderCard = ({ orderId, variant = 'full' }: OrderCardProps) => {
+const OrderCard = ({ orderId, order: propOrder, variant = 'full' }: OrderCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
-  const [order, setOrder] = useState<Order | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [order, setOrder] = useState<Order | null>(propOrder || null);
+  const [loading, setLoading] = useState(!propOrder);
   const [error, setError] = useState<string | null>(null);
+  
+  // Get updateOrder function from waiterStore
+  const { orders, setOrders } = useWaiterStore();
 
-  // Fetch order data when component mounts or orderId changes
+  // Fetch order data when component mounts or orderId changes (only if order not provided as prop)
   useEffect(() => {
+    if (propOrder) {
+      // If order is provided as prop, use it directly
+      setOrder(propOrder);
+      setLoading(false);
+      return;
+    }
+
+    if (!orderId) {
+      setError('No order ID or order data provided');
+      setLoading(false);
+      return;
+    }
+
     const fetchOrder = async () => {
       setLoading(true);
       setError(null);
@@ -46,7 +64,7 @@ const OrderCard = ({ orderId, variant = 'full' }: OrderCardProps) => {
     };
 
     fetchOrder();
-  }, [orderId]);
+  }, [orderId, propOrder]);
 
   // Show loading spinner while fetching
   if (loading) {
@@ -54,7 +72,7 @@ const OrderCard = ({ orderId, variant = 'full' }: OrderCardProps) => {
       <Box p={2} display="flex" justifyContent="center" alignItems="center">
         <CircularProgress size={40} />
         <Typography variant="body2" sx={{ ml: 2 }}>
-          Loading order #{orderId}...
+          Loading order #{orderId || '...'}...
         </Typography>
       </Box>
     );
@@ -65,7 +83,7 @@ const OrderCard = ({ orderId, variant = 'full' }: OrderCardProps) => {
     return (
       <Box p={2}>
         <Typography color="error">
-          {error || `Order #${orderId} not found`}
+          {error || `Order #${orderId || 'unknown'} not found`}
         </Typography>
       </Box>
     );
@@ -91,7 +109,17 @@ const OrderCard = ({ orderId, variant = 'full' }: OrderCardProps) => {
       }
 
       // Update local state after successful API call
-      setOrder(prev => prev ? { ...prev, status: newStatus } : null);
+      const updatedOrder = { ...displayOrder, status: newStatus };
+      setOrder(updatedOrder);
+      
+      // Only update the global store if this card was created from OrdersList (has propOrder)
+      // Individual cards (orderId only) should not update global store to avoid conflicts
+      if (propOrder && orders.length > 0) {
+        setOrders(orders.map(order => 
+          order.id === displayOrder.id ? updatedOrder : order
+        ));
+      }
+      
       console.log('Order status updated successfully to:', newStatus);
     } catch (error) {
       console.error('Error updating order status:', error);
@@ -145,7 +173,29 @@ const OrderCard = ({ orderId, variant = 'full' }: OrderCardProps) => {
   };
 
   const handleOpenModal = () => setIsModalOpen(true);
-  const handleCloseModal = () => setIsModalOpen(false);
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    // If this card was created from OrdersList (has propOrder), 
+    // trigger a refresh to get updated data from the server
+    if (propOrder && orders.length > 0) {
+      // Re-fetch the order data to get the latest status
+      const fetchUpdatedOrder = async () => {
+        try {
+          const response = await fetch(`http://localhost:3008/orders/${order.id}`);
+          if (response.ok) {
+            const updatedOrder: Order = await response.json();
+            // Update the global store with fresh data
+            setOrders(orders.map(o => 
+              o.id === order.id ? updatedOrder : o
+            ));
+          }
+        } catch (error) {
+          console.error('Error fetching updated order:', error);
+        }
+      };
+      fetchUpdatedOrder();
+    }
+  };
 
   // Compact version for OrderRow
   if (variant === 'compact') {
@@ -181,7 +231,7 @@ const OrderCard = ({ orderId, variant = 'full' }: OrderCardProps) => {
               </Box>
               
               <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-                Location: {order.area} - {order.location}
+                Location: {order.location}
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
                 Order Time: {formatTime(order.orderTime)}
@@ -249,7 +299,7 @@ const OrderCard = ({ orderId, variant = 'full' }: OrderCardProps) => {
               </Box>
             </Box>
             <Box sx={{ p: 0 }}>
-              <OrderCard orderId={orderId} variant="full" />
+              <OrderCard orderId={order.id} variant="full" />
             </Box>
           </Box>
         </Modal>
@@ -276,7 +326,7 @@ const OrderCard = ({ orderId, variant = 'full' }: OrderCardProps) => {
         <Box display="flex" justifyContent="space-between" mb={2}>
           <Box>
             <Typography variant="body2" color="text.secondary">
-              Location: {displayOrder.area} - {displayOrder.location}
+              Location: {displayOrder.location}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Order Time: {formatTime(displayOrder.orderTime)}
