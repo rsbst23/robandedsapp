@@ -1,33 +1,40 @@
-import { Card, CardContent, Typography, Box, Chip, Divider, Modal } from '@mui/material';
-import { useState } from 'react';
-import { 
-  CheckCircle, 
-  HourglassEmpty, 
-  Restaurant, 
-  Cancel, 
+import {
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  Chip,
+  Divider,
+  Modal,
+} from "@mui/material";
+import { useState } from "react";
+import {
+  CheckCircle,
+  HourglassEmpty,
+  Restaurant,
+  Cancel,
   AccessTime,
   Assignment,
   FiberNew,
   NotificationImportant,
   Warning,
-  Close
-} from '@mui/icons-material';
-import type { Order } from '../../types/types';
-import { useWaiterStore } from '../../stores/waiterStore';
+  Close,
+} from "@mui/icons-material";
+import { useWaiterStore } from "../../stores/waiterStore";
 
 interface OrderCardProps {
   orderId: number;
-  variant?: 'full' | 'compact';
+  variant?: "full" | "compact";
 }
 
-const OrderCard = ({ orderId, variant = 'full' }: OrderCardProps) => {
+const OrderCard = ({ orderId, variant = "full" }: OrderCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const { updateOrderStatus, orders } = useWaiterStore();
 
   // Get the order data from the store
-  const order = orders.find(o => o.id === orderId);
-  
+  const order = orders.find((o) => o.id === orderId);
+
   // If order not found, show error
   if (!order) {
     return (
@@ -43,13 +50,76 @@ const OrderCard = ({ orderId, variant = 'full' }: OrderCardProps) => {
   const handleProblemClick = () => {
     // Use setTimeout to break out of any potential form submission context
     setTimeout(async () => {
-      console.log('Problem button clicked for order:', displayOrder.id);
+      console.log("Problem button clicked for order:", displayOrder.id);
       setIsUpdatingStatus(true);
       try {
-        await updateOrderStatus(displayOrder.id, 'problem');
-        console.log('Order status updated successfully');
+        await updateOrderStatus(displayOrder.id, "problem");
+        console.log("Order status updated successfully");
       } catch (error) {
-        console.error('Error updating order status:', error);
+        console.error("Error updating order status:", error);
+      } finally {
+        setIsUpdatingStatus(false);
+      }
+    }, 0);
+  };
+
+  const handlePickupClick = () => {
+    // Use setTimeout to break out of any potential form submission context
+    setTimeout(async () => {
+      console.log("Pick up button clicked for order:", displayOrder.id);
+      setIsUpdatingStatus(true);
+      try {
+        await updateOrderStatus(displayOrder.id, "pickedup");
+        console.log("Order status updated successfully");
+      } catch (error) {
+        console.error("Error updating order status:", error);
+      } finally {
+        setIsUpdatingStatus(false);
+      }
+    }, 0);
+  };
+
+  const handleReadyForGuestClick = () => {
+    // Use setTimeout to break out of any potential form submission context
+    setTimeout(async () => {
+      console.log("Ready for Guest button clicked for order:", displayOrder.id);
+      setIsUpdatingStatus(true);
+      try {
+        await updateOrderStatus(displayOrder.id, "readyforguest");
+        console.log("Order status updated successfully");
+      } catch (error) {
+        console.error("Error updating order status:", error);
+      } finally {
+        setIsUpdatingStatus(false);
+      }
+    }, 0);
+  };
+
+  const handleDeliveredClick = () => {
+    // Use setTimeout to break out of any potential form submission context
+    setTimeout(async () => {
+      console.log("Delivered button clicked for order:", displayOrder.id);
+      setIsUpdatingStatus(true);
+      try {
+        await updateOrderStatus(displayOrder.id, "delivered");
+        console.log("Order status updated successfully");
+      } catch (error) {
+        console.error("Error updating order status:", error);
+      } finally {
+        setIsUpdatingStatus(false);
+      }
+    }, 0);
+  };
+  const handleCompleteClick = () => {
+    // Use setTimeout to break out of any potential form submission context
+    setTimeout(async () => {
+      console.log("Complete button clicked for order:", displayOrder.id);
+      setIsUpdatingStatus(true);
+      try {
+        await updateOrderStatus(displayOrder.id, "completed");
+        console.log("Order status updated successfully");
+      } catch (error) {
+        console.error("Error updating order status:", error);
       } finally {
         setIsUpdatingStatus(false);
       }
@@ -58,42 +128,87 @@ const OrderCard = ({ orderId, variant = 'full' }: OrderCardProps) => {
 
   const getStatusConfig = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'completed':
-        return { color: 'success' as const, icon: <CheckCircle fontSize="small" />, label: 'Completed' };
-      case 'pending':
-        return { color: 'warning' as const, icon: <HourglassEmpty fontSize="small" />, label: 'Pending' };
-      case 'preparing':
-        return { color: 'info' as const, icon: <Restaurant fontSize="small" />, label: 'Preparing' };
-      case 'readyforguest':
-        return { color: 'warning' as const, icon: <NotificationImportant fontSize="small" />, label: 'Ready for Guest' };
-      case 'cancelled':
-        return { color: 'error' as const, icon: <Cancel fontSize="small" />, label: 'Cancelled' };
-      case 'inprogress':
-        return { color: 'info' as const, icon: <AccessTime fontSize="small" />, label: 'In Progress' };
-      case 'new':
-        return { color: 'secondary' as const, icon: <FiberNew fontSize="small" />, label: 'New Order' };
-      case 'problem':
-        return { color: 'error' as const, icon: <Warning fontSize="small" />, label: 'Problem' };
+      case "completed":
+        return {
+          color: "success" as const,
+          icon: <CheckCircle fontSize="small" />,
+          label: "Completed",
+        };
+      case "pending":
+        return {
+          color: "warning" as const,
+          icon: <HourglassEmpty fontSize="small" />,
+          label: "Pending",
+        };
+      case "preparing":
+        return {
+          color: "info" as const,
+          icon: <Restaurant fontSize="small" />,
+          label: "Preparing",
+        };
+      case "readyforguest":
+        return {
+          color: "warning" as const,
+          icon: <NotificationImportant fontSize="small" />,
+          label: "Ready for Guest",
+        };
+      case "cancelled":
+        return {
+          color: "error" as const,
+          icon: <Cancel fontSize="small" />,
+          label: "Cancelled",
+        };
+      case "inprogress":
+        return {
+          color: "info" as const,
+          icon: <AccessTime fontSize="small" />,
+          label: "In Progress",
+        };
+      case "new":
+        return {
+          color: "secondary" as const,
+          icon: <FiberNew fontSize="small" />,
+          label: "New Order",
+        };
+      case "problem":
+        return {
+          color: "error" as const,
+          icon: <Warning fontSize="small" />,
+          label: "Problem",
+        };
+      case "delivered":
+        return {
+          color: "success" as const,
+          icon: <CheckCircle fontSize="small" />,
+          label: "Delivered",
+        };
       default:
-        return { color: 'default' as const, icon: <Assignment fontSize="small" />, label: status };
+        return {
+          color: "default" as const,
+          icon: <Assignment fontSize="small" />,
+          label: status,
+        };
     }
   };
 
   const formatTime = (dateString: string | null | undefined) => {
     if (!dateString) {
-      return 'Awaiting pickup';
+      return "Awaiting pickup";
     }
-    
+
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
-      return 'Invalid date';
+      return "Invalid date";
     }
-    
+
     return date.toLocaleString();
   };
 
   const getTotalAmount = () => {
-    const subtotal = displayOrder.items.reduce((sum, item) => sum + item.price, 0);
+    const subtotal = displayOrder.items.reduce(
+      (sum, item) => sum + item.price,
+      0
+    );
     return subtotal + displayOrder.tax + displayOrder.tip;
   };
 
@@ -101,88 +216,104 @@ const OrderCard = ({ orderId, variant = 'full' }: OrderCardProps) => {
   const handleCloseModal = () => setIsModalOpen(false);
 
   // Compact version for OrderRow
-  if (variant === 'compact') {
+  if (variant === "compact") {
     return (
       <>
-        <Card 
-          sx={{ 
-            mb: 2, 
-            boxShadow: 1, 
-            cursor: 'pointer',
-            '&:hover': {
+        <Card
+          sx={{
+            mb: 2,
+            boxShadow: 1,
+            cursor: "pointer",
+            "&:hover": {
               boxShadow: 3,
-              transform: 'translateY(-1px)',
-              transition: 'all 0.2s ease-in-out'
-            }
+              transform: "translateY(-1px)",
+              transition: "all 0.2s ease-in-out",
+            },
           }}
           onClick={handleOpenModal}
         >
-        <CardContent sx={{ pb: 2 }}>
-          <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-            <Box flex={1}>
-              <Box display="flex" alignItems="center" gap={2} mb={1}>
-                <Typography variant="h6" component="h3">
-                  Order #{order.id}
+          <CardContent sx={{ pb: 2 }}>
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="flex-start"
+            >
+              <Box flex={1}>
+                <Box display="flex" alignItems="center" gap={2} mb={1}>
+                  <Typography variant="h6" component="h3">
+                    Order #{order.id}
+                  </Typography>
+                  <Chip
+                    icon={getStatusConfig(order.status).icon}
+                    label={getStatusConfig(order.status).label}
+                    color={getStatusConfig(order.status).color}
+                    variant="filled"
+                    size="small"
+                  />
+                </Box>
+
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ mb: 0.5 }}
+                >
+                  Location: {order.area} - {order.location}
                 </Typography>
-                <Chip 
-                  icon={getStatusConfig(order.status).icon}
-                  label={getStatusConfig(order.status).label} 
-                  color={getStatusConfig(order.status).color}
-                  variant="filled"
-                  size="small"
-                />
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ mb: 0.5 }}
+                >
+                  Order Time: {formatTime(order.orderTime)}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Pickup Time: {formatTime(order.pickupTime)}
+                </Typography>
               </Box>
-              
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-                Location: {order.area} - {order.location}
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-                Order Time: {formatTime(order.orderTime)}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Pickup Time: {formatTime(order.pickupTime)}
-              </Typography>
+
+              <Box textAlign="right" ml={2}>
+                <Typography variant="h6" color="primary" fontWeight="bold">
+                  ${getTotalAmount().toFixed(2)}
+                </Typography>
+              </Box>
             </Box>
-            
-            <Box textAlign="right" ml={2}>
-              <Typography variant="h6" color="primary" fontWeight="bold">
-                ${getTotalAmount().toFixed(2)}
-              </Typography>
-            </Box>
-          </Box>
-        </CardContent>
+          </CardContent>
         </Card>
 
         {/* Modal for full order details */}
         <Modal
           open={isModalOpen}
           onClose={handleCloseModal}
-          sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           <Box
             sx={{
-              bgcolor: 'background.paper',
+              bgcolor: "background.paper",
               borderRadius: 2,
               boxShadow: 24,
               p: 0,
-              width: '800px',
-              maxHeight: '800px',
-              overflow: 'auto',
-              position: 'relative'
+              width: "800px",
+              maxHeight: "800px",
+              overflow: "auto",
+              position: "relative",
             }}
           >
             <Box
               sx={{
-                position: 'sticky',
+                position: "sticky",
                 top: 0,
-                bgcolor: 'background.paper',
+                bgcolor: "background.paper",
                 zIndex: 1,
                 p: 2,
                 borderBottom: 1,
-                borderColor: 'divider',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
+                borderColor: "divider",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
               }}
             >
               <Typography variant="h6">Order Details</Typography>
@@ -190,12 +321,12 @@ const OrderCard = ({ orderId, variant = 'full' }: OrderCardProps) => {
                 component="button"
                 onClick={handleCloseModal}
                 sx={{
-                  border: 'none',
-                  background: 'none',
-                  cursor: 'pointer',
+                  border: "none",
+                  background: "none",
+                  cursor: "pointer",
                   p: 1,
                   borderRadius: 1,
-                  '&:hover': { bgcolor: 'action.hover' }
+                  "&:hover": { bgcolor: "action.hover" },
                 }}
               >
                 <Close />
@@ -212,20 +343,25 @@ const OrderCard = ({ orderId, variant = 'full' }: OrderCardProps) => {
 
   // Full version (existing implementation)
   return (
-    <Card sx={{ mb: 2, boxShadow: variant === 'full' ? 0 : 2, border: 'none' }}>
+    <Card sx={{ mb: 2, boxShadow: variant === "full" ? 0 : 2, border: "none" }}>
       <CardContent>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={2}
+        >
           <Typography variant="h6" component="h2">
             Order #{displayOrder.id}
           </Typography>
-          <Chip 
+          <Chip
             icon={getStatusConfig(displayOrder.status).icon}
-            label={getStatusConfig(displayOrder.status).label} 
+            label={getStatusConfig(displayOrder.status).label}
             color={getStatusConfig(displayOrder.status).color}
             variant="filled"
           />
         </Box>
-        
+
         <Box display="flex" justifyContent="space-between" mb={2}>
           <Box>
             <Typography variant="body2" color="text.secondary">
@@ -237,30 +373,169 @@ const OrderCard = ({ orderId, variant = 'full' }: OrderCardProps) => {
             <Typography variant="body2" color="text.secondary">
               Pickup Time: {formatTime(displayOrder.pickupTime)}
             </Typography>
-            {displayOrder.status.toLowerCase() !== 'problem' && (
+            {displayOrder.status.toLowerCase() == "readyforguest" && (
+              <Box mt={1}>
+                <Box
+                  onClick={handlePickupClick}
+                  sx={{
+                    display: "inline-block",
+                    px: 2,
+                    py: 1,
+                    backgroundColor: isUpdatingStatus
+                      ? "grey.400"
+                      : "error.main",
+                    color: "white",
+                    borderRadius: 1,
+                    cursor: isUpdatingStatus ? "not-allowed" : "pointer",
+                    fontSize: "0.875rem",
+                    fontWeight: 500,
+                    userSelect: "none",
+                    "&:hover": {
+                      backgroundColor: isUpdatingStatus
+                        ? "grey.400"
+                        : "error.dark",
+                    },
+                    "&:active": {
+                      backgroundColor: isUpdatingStatus
+                        ? "grey.400"
+                        : "error.darker",
+                    },
+                  }}
+                >
+                  {isUpdatingStatus ? "Updating..." : "Pick up"}
+                </Box>
+              </Box>
+            )}
+            {displayOrder.status.toLowerCase() == "pickedup" && (
+              <Box mt={1}>
+                <Box
+                  onClick={handleDeliveredClick}
+                  sx={{
+                    display: "inline-block",
+                    px: 2,
+                    py: 1,
+                    backgroundColor: isUpdatingStatus
+                      ? "grey.400"
+                      : "error.main",
+                    color: "white",
+                    borderRadius: 1,
+                    cursor: isUpdatingStatus ? "not-allowed" : "pointer",
+                    fontSize: "0.875rem",
+                    fontWeight: 500,
+                    userSelect: "none",
+                    "&:hover": {
+                      backgroundColor: isUpdatingStatus
+                        ? "grey.400"
+                        : "error.dark",
+                    },
+                    "&:active": {
+                      backgroundColor: isUpdatingStatus
+                        ? "grey.400"
+                        : "error.darker",
+                    },
+                  }}
+                >
+                  {isUpdatingStatus ? "Updating..." : "Delivered"}
+                </Box>
+              </Box>
+            )}
+            {displayOrder.status.toLowerCase() == "delivered" && (
+              <Box mt={1}>
+                <Box
+                  onClick={handleCompleteClick}
+                  sx={{
+                    display: "inline-block",
+                    px: 2,
+                    py: 1,
+                    backgroundColor: isUpdatingStatus
+                      ? "grey.400"
+                      : "error.main",
+                    color: "white",
+                    borderRadius: 1,
+                    cursor: isUpdatingStatus ? "not-allowed" : "pointer",
+                    fontSize: "0.875rem",
+                    fontWeight: 500,
+                    userSelect: "none",
+                    "&:hover": {
+                      backgroundColor: isUpdatingStatus
+                        ? "grey.400"
+                        : "error.dark",
+                    },
+                    "&:active": {
+                      backgroundColor: isUpdatingStatus
+                        ? "grey.400"
+                        : "error.darker",
+                    },
+                  }}
+                >
+                  {isUpdatingStatus ? "Updating..." : "Complete"}
+                </Box>
+              </Box>
+            )}
+            {displayOrder.status.toLowerCase() == "new" && (
+              <Box mt={1}>
+                <Box
+                  onClick={handleReadyForGuestClick}
+                  sx={{
+                    display: "inline-block",
+                    px: 2,
+                    py: 1,
+                    backgroundColor: isUpdatingStatus
+                      ? "grey.400"
+                      : "error.main",
+                    color: "white",
+                    borderRadius: 1,
+                    cursor: isUpdatingStatus ? "not-allowed" : "pointer",
+                    fontSize: "0.875rem",
+                    fontWeight: 500,
+                    userSelect: "none",
+                    "&:hover": {
+                      backgroundColor: isUpdatingStatus
+                        ? "grey.400"
+                        : "error.dark",
+                    },
+                    "&:active": {
+                      backgroundColor: isUpdatingStatus
+                        ? "grey.400"
+                        : "error.darker",
+                    },
+                  }}
+                >
+                  {isUpdatingStatus ? "Updating..." : "Ready for Guest"}
+                </Box>
+              </Box>
+            )}
+
+            {displayOrder.status.toLowerCase() !== "problem" && (
               <Box mt={1}>
                 <Box
                   onClick={handleProblemClick}
                   sx={{
-                    display: 'inline-block',
+                    display: "inline-block",
                     px: 2,
                     py: 1,
-                    backgroundColor: isUpdatingStatus ? 'grey.400' : 'error.main',
-                    color: 'white',
+                    backgroundColor: isUpdatingStatus
+                      ? "grey.400"
+                      : "error.main",
+                    color: "white",
                     borderRadius: 1,
-                    cursor: isUpdatingStatus ? 'not-allowed' : 'pointer',
-                    fontSize: '0.875rem',
+                    cursor: isUpdatingStatus ? "not-allowed" : "pointer",
+                    fontSize: "0.875rem",
                     fontWeight: 500,
-                    userSelect: 'none',
-                    '&:hover': {
-                      backgroundColor: isUpdatingStatus ? 'grey.400' : 'error.dark',
+                    userSelect: "none",
+                    "&:hover": {
+                      backgroundColor: isUpdatingStatus
+                        ? "grey.400"
+                        : "error.dark",
                     },
-                    '&:active': {
-                      backgroundColor: isUpdatingStatus ? 'grey.400' : 'error.darker',
-                    }
+                    "&:active": {
+                      backgroundColor: isUpdatingStatus
+                        ? "grey.400"
+                        : "error.darker",
+                    },
                   }}
                 >
-                  {isUpdatingStatus ? 'Updating...' : 'Problem'}
+                  {isUpdatingStatus ? "Updating..." : "Problem"}
                 </Box>
               </Box>
             )}
@@ -273,21 +548,26 @@ const OrderCard = ({ orderId, variant = 'full' }: OrderCardProps) => {
         </Box>
 
         <Divider sx={{ my: 2 }} />
-        
+
         <Typography variant="subtitle1" gutterBottom>
           Items ({displayOrder.items.length}):
         </Typography>
-        
-        <Box 
-          sx={{ 
-            maxHeight: '300px', 
-            overflow: 'auto',
+
+        <Box
+          sx={{
+            maxHeight: "300px",
+            overflow: "auto",
             p: 1,
-            mb: 2
+            mb: 2,
           }}
         >
           {displayOrder.items.map((item) => (
-            <Box key={item.id} display="flex" justifyContent="space-between" mb={1}>
+            <Box
+              key={item.id}
+              display="flex"
+              justifyContent="space-between"
+              mb={1}
+            >
               <Box>
                 <Typography variant="body2">
                   Item #{item.itemId} - {item.firstName}
@@ -298,47 +578,57 @@ const OrderCard = ({ orderId, variant = 'full' }: OrderCardProps) => {
                   </Typography>
                 )}
               </Box>
-              <Typography variant="body2">
-                ${item.price.toFixed(2)}
-              </Typography>
+              <Typography variant="body2">${item.price.toFixed(2)}</Typography>
             </Box>
           ))}
         </Box>
-        
+
         <Divider sx={{ my: 1 }} />
-        
+
         <Box>
           <Box display="flex" justifyContent="space-between">
             <Typography variant="body2">Subtotal:</Typography>
             <Typography variant="body2">
-              ${displayOrder.items.reduce((sum, item) => sum + item.price, 0).toFixed(2)}
+              $
+              {displayOrder.items
+                .reduce((sum, item) => sum + item.price, 0)
+                .toFixed(2)}
             </Typography>
           </Box>
           <Box display="flex" justifyContent="space-between">
             <Typography variant="body2">Tax:</Typography>
-            <Typography variant="body2">${displayOrder.tax.toFixed(2)}</Typography>
+            <Typography variant="body2">
+              ${displayOrder.tax.toFixed(2)}
+            </Typography>
           </Box>
           <Box display="flex" justifyContent="space-between">
             <Typography variant="body2">Tip:</Typography>
-            <Typography variant="body2">${displayOrder.tip.toFixed(2)}</Typography>
+            <Typography variant="body2">
+              ${displayOrder.tip.toFixed(2)}
+            </Typography>
           </Box>
           <Box display="flex" justifyContent="space-between" fontWeight="bold">
-            <Typography variant="body1" fontWeight="bold">Total:</Typography>
+            <Typography variant="body1" fontWeight="bold">
+              Total:
+            </Typography>
             <Typography variant="body1" fontWeight="bold">
               ${getTotalAmount().toFixed(2)}
             </Typography>
           </Box>
         </Box>
-        
+
         <Box mt={2}>
           <Typography variant="caption" color="text.secondary">
             {displayOrder.creditCard && displayOrder.creditCard.pan ? (
               <>
-                Payment: ****{displayOrder.creditCard.pan.slice(-4)} 
-                ({displayOrder.creditCard.expiryMonth?.toString().padStart(2, '0') || 'XX'}/{displayOrder.creditCard.expiryYear || 'XXXX'})
+                Payment: ****{displayOrder.creditCard.pan.slice(-4)}(
+                {displayOrder.creditCard.expiryMonth
+                  ?.toString()
+                  .padStart(2, "0") || "XX"}
+                /{displayOrder.creditCard.expiryYear || "XXXX"})
               </>
             ) : (
-              'Payment: No card information available'
+              "Payment: No card information available"
             )}
           </Typography>
         </Box>
