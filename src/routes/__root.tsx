@@ -7,6 +7,7 @@ export const Route = createRootRoute({
 
 // import Header from "../components/Header";
 import WaiterHeader from "../components/waiter/WaiterHeader";
+import Footer from "../components/Footer";
 
 function RootComponent() {
   return (
@@ -14,7 +15,7 @@ function RootComponent() {
       {/* <Header /> */}
       <WaiterHeader />
       <Outlet />
-      <footer>Copyright 2024 Troiana is Awesome Inc</footer>
+      <Footer />
     </>
   );
 }

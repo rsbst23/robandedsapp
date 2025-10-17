@@ -148,14 +148,6 @@ const Home = () => {
               </Link>
             </div>
           )}
-
-          <div style={footerStyles}>
-            <div style={footerContentStyles}>
-              <span>© 2025 Dinner and a Movie</span>
-              <span style={footerDividerStyles}>•</span>
-              <span>Waiter Portal</span>
-            </div>
-          </div>
         </div>
       </div>
     </>
@@ -337,26 +329,6 @@ const messageStyles: React.CSSProperties = {
   color: "#64748b",
   margin: "0",
   lineHeight: "1.6",
-};
-
-const footerStyles: React.CSSProperties = {
-  marginTop: "50px",
-  paddingTop: "25px",
-  borderTop: "2px solid rgba(102, 126, 234, 0.1)",
-};
-
-const footerContentStyles: React.CSSProperties = {
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  gap: "12px",
-  color: "#9ca3af",
-  fontSize: "14px",
-  fontWeight: "500",
-};
-
-const footerDividerStyles: React.CSSProperties = {
-  color: "#d1d5db",
 };
 
 export default Home;

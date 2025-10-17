@@ -187,10 +187,6 @@ const LoginPage = () => {
               )}
             </button>
           </form>
-
-          <div style={footerStyles}>
-            © 2025 Dinner and a Movie • Waiter Portal
-          </div>
         </div>
       </div>
     </>
@@ -309,14 +305,6 @@ const loadingSpinnerStyles: React.CSSProperties = {
   borderRadius: "50%",
   animation: "spin 1s linear infinite",
   display: "inline-block",
-};
-
-const footerStyles: React.CSSProperties = {
-  textAlign: "center",
-  marginTop: "40px",
-  color: "#9ca3af",
-  fontSize: "14px",
-  fontWeight: "400",
 };
 
 export default LoginPage;
