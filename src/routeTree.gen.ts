@@ -11,8 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RegisterIndexRouteImport } from './routes/register/index'
+import { Route as OrdersIndexRouteImport } from './routes/orders/index'
 import { Route as LoginIndexRouteImport } from './routes/login/index'
 import { Route as CheckoutIndexRouteImport } from './routes/checkout/index'
+import { Route as AreasIndexRouteImport } from './routes/areas/index'
 import { Route as PickSeatsShowingIdRouteImport } from './routes/pick-seats/$showingId'
 import { Route as FilmsFilmIdRouteImport } from './routes/films/$filmId'
 
@@ -26,6 +28,11 @@ const RegisterIndexRoute = RegisterIndexRouteImport.update({
   path: '/register/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrdersIndexRoute = OrdersIndexRouteImport.update({
+  id: '/orders/',
+  path: '/orders/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginIndexRoute = LoginIndexRouteImport.update({
   id: '/login/',
   path: '/login/',
@@ -34,6 +41,11 @@ const LoginIndexRoute = LoginIndexRouteImport.update({
 const CheckoutIndexRoute = CheckoutIndexRouteImport.update({
   id: '/checkout/',
   path: '/checkout/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AreasIndexRoute = AreasIndexRouteImport.update({
+  id: '/areas/',
+  path: '/areas/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PickSeatsShowingIdRoute = PickSeatsShowingIdRouteImport.update({
@@ -51,16 +63,20 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/films/$filmId': typeof FilmsFilmIdRoute
   '/pick-seats/$showingId': typeof PickSeatsShowingIdRoute
+  '/areas': typeof AreasIndexRoute
   '/checkout': typeof CheckoutIndexRoute
   '/login': typeof LoginIndexRoute
+  '/orders': typeof OrdersIndexRoute
   '/register': typeof RegisterIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/films/$filmId': typeof FilmsFilmIdRoute
   '/pick-seats/$showingId': typeof PickSeatsShowingIdRoute
+  '/areas': typeof AreasIndexRoute
   '/checkout': typeof CheckoutIndexRoute
   '/login': typeof LoginIndexRoute
+  '/orders': typeof OrdersIndexRoute
   '/register': typeof RegisterIndexRoute
 }
 export interface FileRoutesById {
@@ -68,8 +84,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/films/$filmId': typeof FilmsFilmIdRoute
   '/pick-seats/$showingId': typeof PickSeatsShowingIdRoute
+  '/areas/': typeof AreasIndexRoute
   '/checkout/': typeof CheckoutIndexRoute
   '/login/': typeof LoginIndexRoute
+  '/orders/': typeof OrdersIndexRoute
   '/register/': typeof RegisterIndexRoute
 }
 export interface FileRouteTypes {
@@ -78,24 +96,30 @@ export interface FileRouteTypes {
     | '/'
     | '/films/$filmId'
     | '/pick-seats/$showingId'
+    | '/areas'
     | '/checkout'
     | '/login'
+    | '/orders'
     | '/register'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/films/$filmId'
     | '/pick-seats/$showingId'
+    | '/areas'
     | '/checkout'
     | '/login'
+    | '/orders'
     | '/register'
   id:
     | '__root__'
     | '/'
     | '/films/$filmId'
     | '/pick-seats/$showingId'
+    | '/areas/'
     | '/checkout/'
     | '/login/'
+    | '/orders/'
     | '/register/'
   fileRoutesById: FileRoutesById
 }
@@ -103,8 +127,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FilmsFilmIdRoute: typeof FilmsFilmIdRoute
   PickSeatsShowingIdRoute: typeof PickSeatsShowingIdRoute
+  AreasIndexRoute: typeof AreasIndexRoute
   CheckoutIndexRoute: typeof CheckoutIndexRoute
   LoginIndexRoute: typeof LoginIndexRoute
+  OrdersIndexRoute: typeof OrdersIndexRoute
   RegisterIndexRoute: typeof RegisterIndexRoute
 }
 
@@ -124,6 +150,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/orders/': {
+      id: '/orders/'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login/': {
       id: '/login/'
       path: '/login'
@@ -136,6 +169,13 @@ declare module '@tanstack/react-router' {
       path: '/checkout'
       fullPath: '/checkout'
       preLoaderRoute: typeof CheckoutIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/areas/': {
+      id: '/areas/'
+      path: '/areas'
+      fullPath: '/areas'
+      preLoaderRoute: typeof AreasIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pick-seats/$showingId': {
@@ -159,8 +199,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FilmsFilmIdRoute: FilmsFilmIdRoute,
   PickSeatsShowingIdRoute: PickSeatsShowingIdRoute,
+  AreasIndexRoute: AreasIndexRoute,
   CheckoutIndexRoute: CheckoutIndexRoute,
   LoginIndexRoute: LoginIndexRoute,
+  OrdersIndexRoute: OrdersIndexRoute,
   RegisterIndexRoute: RegisterIndexRoute,
 }
 export const routeTree = rootRouteImport

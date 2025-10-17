@@ -5,12 +5,14 @@ export const Route = createRootRoute({
   component: RootComponent,
 });
 
-import Header from "../components/Header";
+// import Header from "../components/Header";
+import WaiterHeader from "../components/waiter/WaiterHeader";
 
 function RootComponent() {
   return (
     <>
-      <Header />
+      {/* <Header /> */}
+      <WaiterHeader />
       <Outlet />
       <footer>Copyright 2024 Troiana is Awesome Inc</footer>
     </>
