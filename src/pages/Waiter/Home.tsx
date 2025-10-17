@@ -113,47 +113,51 @@ const Home = () => {
             <h2 style={subtitleStyles}>Waiter Portal Dashboard</h2>
           </div>
 
-        {isAuthenticated ? (
-          <div style={welcomeContainerStyles} className="welcome-card">
-            <div style={statusBadgeStyles} className="status-badge">
-              <span style={statusDotStyles}></span>
-              Online
+          {isAuthenticated ? (
+            <div style={welcomeContainerStyles} className="welcome-card">
+              <div style={statusBadgeStyles} className="status-badge">
+                <span style={statusDotStyles}></span>
+                Online
+              </div>
+              <h3 style={welcomeTitleStyles}>
+                Welcome back, {user?.first || "Waiter"}!
+              </h3>
+              <p style={welcomeMessageStyles}>
+                You're successfully logged in to the waiter portal. Ready to
+                serve customers and manage orders.
+              </p>
+              <div style={quickActionsStyles}>
+                <Link to="/orders" style={actionButtonStyles}>
+                  📋 View Orders
+                </Link>
+                <Link to="/areas" style={actionButtonStyles}>
+                  🏢 Theater Areas
+                </Link>
+              </div>
             </div>
-            <h3 style={welcomeTitleStyles}>Welcome back, {user?.first || "Waiter"}!</h3>
-            <p style={welcomeMessageStyles}>
-              You're successfully logged in to the waiter portal. Ready to serve customers and manage orders.
-            </p>
-            <div style={quickActionsStyles}>
-              <Link to="/orders" style={actionButtonStyles}>
-                📋 View Orders
-              </Link>
-              <Link to="/areas" style={actionButtonStyles}>
-                🏢 Theater Areas
+          ) : (
+            <div style={loginPromptStyles} className="login-prompt">
+              <div style={loginIconStyles}>🔐</div>
+              <h3 style={loginTitleStyles}>Authentication Required</h3>
+              <p style={messageStyles}>
+                Please log in to access the waiter portal and manage your
+                assigned areas and orders.
+              </p>
+              <Link to="/waiterlogin" style={loginButtonStyles}>
+                Sign In to Continue
               </Link>
             </div>
-          </div>
-        ) : (
-          <div style={loginPromptStyles} className="login-prompt">
-            <div style={loginIconStyles}>🔐</div>
-            <h3 style={loginTitleStyles}>Authentication Required</h3>
-            <p style={messageStyles}>
-              Please log in to access the waiter portal and manage your assigned areas and orders.
-            </p>
-            <Link to="/waiterlogin" style={loginButtonStyles}>
-              Sign In to Continue
-            </Link>
-          </div>
-        )}
+          )}
 
-        <div style={footerStyles}>
-          <div style={footerContentStyles}>
-            <span>© 2025 Dinner and a Movie</span>
-            <span style={footerDividerStyles}>•</span>
-            <span>Waiter Portal</span>
+          <div style={footerStyles}>
+            <div style={footerContentStyles}>
+              <span>© 2025 Dinner and a Movie</span>
+              <span style={footerDividerStyles}>•</span>
+              <span>Waiter Portal</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
     </>
   );
 };
@@ -173,7 +177,8 @@ const contentStyles: React.CSSProperties = {
   backdropFilter: "blur(20px)",
   padding: "50px",
   borderRadius: "24px",
-  boxShadow: "0 25px 50px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.2)",
+  boxShadow:
+    "0 25px 50px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.2)",
   width: "100%",
   maxWidth: "700px",
   textAlign: "left",
@@ -224,7 +229,8 @@ const subtitleStyles: React.CSSProperties = {
 const welcomeContainerStyles: React.CSSProperties = {
   marginBottom: "40px",
   padding: "30px",
-  background: "linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)",
+  background:
+    "linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)",
   borderRadius: "20px",
   border: "2px solid rgba(102, 126, 234, 0.1)",
   transition: "all 0.3s ease",
@@ -292,7 +298,8 @@ const loginPromptStyles: React.CSSProperties = {
   marginBottom: "40px",
   padding: "40px 30px",
   textAlign: "center",
-  background: "linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(238, 90, 36, 0.1) 100%)",
+  background:
+    "linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(238, 90, 36, 0.1) 100%)",
   borderRadius: "20px",
   border: "2px solid rgba(255, 107, 107, 0.1)",
   transition: "all 0.3s ease",
