@@ -92,8 +92,8 @@ const OrderCard = ({ orderId, order: propOrder, variant = 'full' }: OrderCardPro
   // For both variants, use the fetched order data
   const displayOrder = order;
 
-  const handleStatusUpdate = async (newStatus: string) => {
-    console.log(`Updating order ${displayOrder.id} status to:`, newStatus);
+  const handleStatusUpdate = async (newStatus: string, actionLabel?: string) => {
+    console.log(`${actionLabel || 'Status update'} button clicked for order:`, displayOrder.id);
     setIsUpdatingStatus(true);
     try {
       const response = await fetch(`http://localhost:3008/orders/${displayOrder.id}`, {
@@ -128,8 +128,6 @@ const OrderCard = ({ orderId, order: propOrder, variant = 'full' }: OrderCardPro
       setIsUpdatingStatus(false);
     }
   };
-
-  const handleProblemClick = () => handleStatusUpdate('problem');
 
   const getStatusConfig = (status: string) => {
     switch (status.toLowerCase()) {
@@ -170,6 +168,78 @@ const OrderCard = ({ orderId, order: propOrder, variant = 'full' }: OrderCardPro
   const getTotalAmount = () => {
     const subtotal = displayOrder.items.reduce((sum, item) => sum + item.price, 0);
     return subtotal + displayOrder.tax + displayOrder.tip;
+  };
+
+  // Reusable button component
+  const ActionButton = ({ onClick, label }: { onClick: () => void; label: string }) => (
+    <Box
+      onClick={onClick}
+      sx={{
+        display: "inline-block",
+        px: 2,
+        py: 1,
+        backgroundColor: isUpdatingStatus ? "grey.400" : "error.main",
+        color: "white",
+        borderRadius: 1,
+        cursor: isUpdatingStatus ? "not-allowed" : "pointer",
+        fontSize: "0.875rem",
+        fontWeight: 500,
+        userSelect: "none",
+        mr: 1,
+        mb: 1,
+        "&:hover": {
+          backgroundColor: isUpdatingStatus ? "grey.400" : "error.dark",
+        },
+        "&:active": {
+          backgroundColor: isUpdatingStatus ? "grey.400" : "error.darker",
+        },
+      }}
+    >
+      {isUpdatingStatus ? "Updating..." : label}
+    </Box>
+  );
+
+  // Define available actions based on current status
+  const getAvailableActions = () => {
+    const actions = [];
+    const status = displayOrder.status.toLowerCase();
+
+    switch (status) {
+      case "readyforguest":
+        actions.push({
+          onClick: () => handleStatusUpdate("pickedup", "Pick up"),
+          label: "Pick up",
+        });
+        break;
+      case "pickedup":
+        actions.push({
+          onClick: () => handleStatusUpdate("delivered", "Delivered"),
+          label: "Delivered",
+        });
+        break;
+      case "delivered":
+        actions.push({
+          onClick: () => handleStatusUpdate("completed", "Complete"),
+          label: "Complete",
+        });
+        break;
+      case "new":
+        actions.push({
+          onClick: () => handleStatusUpdate("readyforguest", "Ready for Guest"),
+          label: "Ready for Guest",
+        });
+        break;
+    }
+
+    // Always show problem button unless status is already problem
+    if (status !== "problem") {
+      actions.push({
+        onClick: () => handleStatusUpdate("problem", "Problem"),
+        label: "Problem",
+      });
+    }
+
+    return actions;
   };
 
   const handleOpenModal = () => setIsModalOpen(true);
@@ -334,31 +404,15 @@ const OrderCard = ({ orderId, order: propOrder, variant = 'full' }: OrderCardPro
             <Typography variant="body2" color="text.secondary">
               Pickup Time: {formatTime(displayOrder.pickupTime)}
             </Typography>
-            {displayOrder.status.toLowerCase() !== 'problem' && (
+            {getAvailableActions().length > 0 && (
               <Box mt={1}>
-                <Box
-                  onClick={handleProblemClick}
-                  sx={{
-                    display: 'inline-block',
-                    px: 2,
-                    py: 1,
-                    backgroundColor: isUpdatingStatus ? 'grey.400' : 'error.main',
-                    color: 'white',
-                    borderRadius: 1,
-                    cursor: isUpdatingStatus ? 'not-allowed' : 'pointer',
-                    fontSize: '0.875rem',
-                    fontWeight: 500,
-                    userSelect: 'none',
-                    '&:hover': {
-                      backgroundColor: isUpdatingStatus ? 'grey.400' : 'error.dark',
-                    },
-                    '&:active': {
-                      backgroundColor: isUpdatingStatus ? 'grey.400' : 'error.darker',
-                    }
-                  }}
-                >
-                  {isUpdatingStatus ? 'Updating...' : 'Problem'}
-                </Box>
+                {getAvailableActions().map((action, index) => (
+                  <ActionButton
+                    key={index}
+                    onClick={action.onClick}
+                    label={action.label}
+                  />
+                ))}
               </Box>
             )}
           </Box>
