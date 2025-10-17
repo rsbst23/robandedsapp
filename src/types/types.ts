@@ -61,3 +61,25 @@ export type Reservation = {
   user_id: number;
   payment_key: string;
 };
+
+export type OrderItem = {
+  id: number;
+  itemId: number;
+  price: number;
+  firstName: string;
+  notes?: string;
+};
+
+export type Order = {
+  id: number;
+  userId: number;
+  orderTime: string;
+  pickupTime: string;
+  area: string;
+  location: string;
+  tax: number;
+  tip: number;
+  creditCard?: CreditCard;
+  items: OrderItem[];
+  status: string;
+};
