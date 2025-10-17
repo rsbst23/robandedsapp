@@ -5,12 +5,13 @@ import { useWaiterStore } from '../../stores/waiterStore';
 import OrderCard from './OrderCard';
 
 interface OrdersListProps {
-  area?: string;
-  excludeArea?: string;
+  theaterId?: number;
+  excludeTheaterId?: number;
+  theaterName?: string;
   ordersPerPage?: number;
 }
 
-const OrdersList = ({ area, excludeArea, ordersPerPage = 3 }: OrdersListProps) => {
+const OrdersList = ({ theaterId, excludeTheaterId, theaterName, ordersPerPage = 3 }: OrdersListProps) => {
   const { orders, loading, error, fetchOrders, clearError } = useWaiterStore();
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -18,18 +19,22 @@ const OrdersList = ({ area, excludeArea, ordersPerPage = 3 }: OrdersListProps) =
     fetchOrders();
   }, [fetchOrders]);
 
-  // Filter and sort orders by area or exclude area if props are provided
+  // Filter and sort orders by theater ID if provided
   const filteredOrders = useMemo(() => {
     let filtered = orders;
     
-    // Include only specific area if provided
-    if (area) {
-      filtered = filtered.filter(order => order.area === area);
+    // Convert theater ID to area string format if provided
+    const theaterArea = theaterId ? `Theater ${theaterId}` : undefined;
+    const excludeTheaterArea = excludeTheaterId ? `Theater ${excludeTheaterId}` : undefined;
+    
+    // Include only specific theater if provided
+    if (theaterArea) {
+      filtered = filtered.filter(order => order.area === theaterArea);
     }
     
-    // Exclude specific area if provided
-    if (excludeArea) {
-      filtered = filtered.filter(order => order.area !== excludeArea);
+    // Exclude specific theater if provided
+    if (excludeTheaterArea) {
+      filtered = filtered.filter(order => order.area !== excludeTheaterArea);
     }
     
     // Sort orders by priority: problem, new, readyforguest, then others
@@ -60,7 +65,7 @@ const OrdersList = ({ area, excludeArea, ordersPerPage = 3 }: OrdersListProps) =
     });
     
     return filtered;
-  }, [orders, area, excludeArea]);
+  }, [orders, theaterId, excludeTheaterId]);
 
   // Pagination logic
   const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
@@ -114,9 +119,9 @@ const OrdersList = ({ area, excludeArea, ordersPerPage = 3 }: OrdersListProps) =
     <Container maxWidth="md">
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
         <Typography variant="h4" component="h1">
-          {area 
-            ? `Orders for ${area} (${filteredOrders.length})` 
-            : excludeArea 
+          {theaterId
+            ? `Orders for ${theaterName || `Theater ${theaterId}`} (${filteredOrders.length})` 
+            : excludeTheaterId
               ? `Other Areas (${filteredOrders.length})` 
               : `Orders (${filteredOrders.length})`
           }
@@ -134,16 +139,16 @@ const OrdersList = ({ area, excludeArea, ordersPerPage = 3 }: OrdersListProps) =
       {filteredOrders.length === 0 ? (
         <Box textAlign="center" py={4}>
           <Typography variant="h6" color="text.secondary">
-            {area 
-              ? `No orders found for ${area}` 
-              : excludeArea 
+            {theaterId
+              ? `No orders found for ${theaterName || `Theater ${theaterId}`}` 
+              : excludeTheaterId
                 ? `No orders found in other areas` 
                 : 'No orders found'
             }
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {excludeArea 
-              ? `Orders from areas other than ${excludeArea} will appear here.`
+            {excludeTheaterId
+              ? `Orders from areas other than Theater ${excludeTheaterId} will appear here.`
               : 'Orders will appear here when customers place them.'
             }
           </Typography>
