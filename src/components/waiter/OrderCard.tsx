@@ -1,5 +1,5 @@
-import { Card, CardContent, Typography, Box, Chip, Divider, Modal } from '@mui/material';
-import { useState } from 'react';
+import { Card, CardContent, Typography, Box, Chip, Divider, Modal, CircularProgress } from '@mui/material';
+import { useState, useEffect } from 'react';
 import { 
   CheckCircle, 
   HourglassEmpty, 
@@ -13,7 +13,6 @@ import {
   Close
 } from '@mui/icons-material';
 import type { Order } from '../../types/types';
-import { useWaiterStore } from '../../stores/waiterStore';
 
 interface OrderCardProps {
   orderId: number;
@@ -23,38 +22,86 @@ interface OrderCardProps {
 const OrderCard = ({ orderId, variant = 'full' }: OrderCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
-  const { updateOrderStatus, orders } = useWaiterStore();
+  const [order, setOrder] = useState<Order | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Get the order data from the store
-  const order = orders.find(o => o.id === orderId);
-  
-  // If order not found, show error
-  if (!order) {
+  // Fetch order data when component mounts or orderId changes
+  useEffect(() => {
+    const fetchOrder = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(`http://localhost:3008/orders/${orderId}`);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch order: ${response.statusText}`);
+        }
+        const orderData: Order = await response.json();
+        setOrder(orderData);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch order');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrder();
+  }, [orderId]);
+
+  // Show loading spinner while fetching
+  if (loading) {
     return (
-      <Box p={2}>
-        <Typography color="error">Order #{orderId} not found</Typography>
+      <Box p={2} display="flex" justifyContent="center" alignItems="center">
+        <CircularProgress size={40} />
+        <Typography variant="body2" sx={{ ml: 2 }}>
+          Loading order #{orderId}...
+        </Typography>
       </Box>
     );
   }
 
-  // For both variants, always use fresh data from store
+  // Show error if fetch failed
+  if (error || !order) {
+    return (
+      <Box p={2}>
+        <Typography color="error">
+          {error || `Order #${orderId} not found`}
+        </Typography>
+      </Box>
+    );
+  }
+
+  // For both variants, use the fetched order data
   const displayOrder = order;
 
-  const handleProblemClick = () => {
-    // Use setTimeout to break out of any potential form submission context
-    setTimeout(async () => {
-      console.log('Problem button clicked for order:', displayOrder.id);
-      setIsUpdatingStatus(true);
-      try {
-        await updateOrderStatus(displayOrder.id, 'problem');
-        console.log('Order status updated successfully');
-      } catch (error) {
-        console.error('Error updating order status:', error);
-      } finally {
-        setIsUpdatingStatus(false);
+  const handleStatusUpdate = async (newStatus: string) => {
+    console.log(`Updating order ${displayOrder.id} status to:`, newStatus);
+    setIsUpdatingStatus(true);
+    try {
+      const response = await fetch(`http://localhost:3008/orders/${displayOrder.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to update order status: ${response.statusText}`);
       }
-    }, 0);
+
+      // Update local state after successful API call
+      setOrder(prev => prev ? { ...prev, status: newStatus } : null);
+      console.log('Order status updated successfully to:', newStatus);
+    } catch (error) {
+      console.error('Error updating order status:', error);
+      setError(error instanceof Error ? error.message : 'Failed to update order status');
+    } finally {
+      setIsUpdatingStatus(false);
+    }
   };
+
+  const handleProblemClick = () => handleStatusUpdate('problem');
 
   const getStatusConfig = (status: string) => {
     switch (status.toLowerCase()) {
